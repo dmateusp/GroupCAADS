@@ -5,3 +5,6 @@
 void  test1(){
 	//SOme code
 }
+void test2(){
+
+}
