@@ -65,8 +65,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryPlagiarism.cpp" />
-    <ClCompile Include="File1.cpp" />
-    <ClCompile Include="File2.cpp" />
     <ClCompile Include="FilePlagiarism.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>

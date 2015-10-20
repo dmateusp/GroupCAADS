@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="File1.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="File2.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
     <ClCompile Include="FilePlagiarism.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
