@@ -50,9 +50,11 @@ void DirectoryPlagiarism::calculatePlagiarism() {
 	int plagiarismIndexesCounter = 0;
 	for (int i = 0; i < size && files[i].fileName != ""; i++) {
 		files[i].plagiarism = 0;
-		for (int j = i+1; j < size && files[j].fileName != ""; j++) {
-			files[i].plagiarism += files[i].percentageSameLines(files[j]);
-			plagiarismIndexesCounter++;
+		for (int j = 0; j < size && files[j].fileName != ""; j++) {
+			if (j != i) {
+				files[i].plagiarism += files[i].percentageSameLines(files[j]);
+				plagiarismIndexesCounter++;
+			}
 		}
 		files[i].plagiarism /= plagiarismIndexesCounter;
 	}
@@ -64,7 +66,9 @@ std::ostream &operator<<(std::ostream &output,
 	output << "- Path to directory : " << Dir.directoryName << std::endl;
 	output << "- Files in directory : " << std::endl;
 	for (int i = 0; Dir.files[i].getFileName() != ""; i++)
-		output << "- File " << i + 1 << " : " << Dir.files[i].getFileName() << "| Plagiarism : " << Dir.files[i].getPlagiarism() << std::endl;
+		output << "- File " << i + 1 << " : " << Dir.files[i].getFileName() << "| Plagiarism (0 for original, 1 for plagiarized) : " << Dir.files[i].getPlagiarism() << std::endl;
 	output << "--------------------------------------" << std::endl;
+	output << "Plagiarism detector using a : " << std::endl;
+	output << "- Same line detector " << std::endl;
 	return output;
 }

@@ -3,3 +3,7 @@
 int test1(){
 	return 0;
 }
+//line3
+//line2
+//code
+//code

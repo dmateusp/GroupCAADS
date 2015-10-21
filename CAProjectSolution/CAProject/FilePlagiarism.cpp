@@ -34,7 +34,7 @@ double FilePlagiarism::percentageSameLines(FilePlagiarism otherFile)
 	std::string line;
 	while (std::getline(read, line)) {
 		linesCounter++;
-		if (content.find(line))
+		if (content.find(line)!=std::string::npos)
 			sameLinesCounter++;
 	}
 	read.close();
