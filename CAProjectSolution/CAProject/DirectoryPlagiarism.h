@@ -12,6 +12,8 @@ private:
 	int size = 10;
 	// Adds a file
 	void addFile(FilePlagiarism file);
+	// Calculates the average plagiarism for every file
+	void calculatePlagiarism();
 public:
 	DirectoryPlagiarism();
 	DirectoryPlagiarism(std::string dirName);

@@ -26,6 +26,7 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
 				addFile(FilePlagiarism(pent->d_name, pent->d_type, directoryName));
 		}
 	}
+	calculatePlagiarism();
 }
 FilePlagiarism DirectoryPlagiarism::getFileAt(int index)
 {
@@ -45,6 +46,17 @@ void DirectoryPlagiarism::addFile(FilePlagiarism file)
 		return;
 	files[i] = file;
 }
+void DirectoryPlagiarism::calculatePlagiarism() {
+	int plagiarismIndexesCounter = 0;
+	for (int i = 0; i < size && files[i].fileName != ""; i++) {
+		files[i].plagiarism = 0;
+		for (int j = i+1; j < size && files[j].fileName != ""; j++) {
+			files[i].plagiarism += files[i].percentageSameLines(files[j]);
+			plagiarismIndexesCounter++;
+		}
+		files[i].plagiarism /= plagiarismIndexesCounter;
+	}
+}
 std::ostream &operator<<(std::ostream &output,
 	const DirectoryPlagiarism &Dir)
 {
@@ -52,7 +64,7 @@ std::ostream &operator<<(std::ostream &output,
 	output << "- Path to directory : " << Dir.directoryName << std::endl;
 	output << "- Files in directory : " << std::endl;
 	for (int i = 0; Dir.files[i].getFileName() != ""; i++)
-		output << "- File " << i + 1 << " : " << Dir.files[i].getFileName() << std::endl;
+		output << "- File " << i + 1 << " : " << Dir.files[i].getFileName() << "| Plagiarism : " << Dir.files[i].getPlagiarism() << std::endl;
 	output << "--------------------------------------" << std::endl;
 	return output;
 }
