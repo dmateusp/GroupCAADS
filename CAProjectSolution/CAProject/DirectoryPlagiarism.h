@@ -10,10 +10,17 @@ private:
 	std::string directoryName;
 	FilePlagiarism files[10];
 	int size = 10;
+	// Adds a file
+	void addFile(FilePlagiarism file);
 public:
 	DirectoryPlagiarism();
 	DirectoryPlagiarism(std::string dirName);
 	virtual ~DirectoryPlagiarism();
-	void addFile(FilePlagiarism file);
+	// Return file at index
+	FilePlagiarism getFileAt(int index);
+	// Learned @ http://www.tutorialspoint.com/cplusplus/input_output_operators_overloading.htm
+	// Operator << overloading
+	friend std::ostream &operator<<(std::ostream &output,
+		const DirectoryPlagiarism &Dir);
 };
 #endif
