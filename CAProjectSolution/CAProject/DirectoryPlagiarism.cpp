@@ -48,15 +48,19 @@ void DirectoryPlagiarism::addFile(FilePlagiarism file)
 }
 void DirectoryPlagiarism::calculatePlagiarism() {
 	int plagiarismIndexesCounter = 0;
+	// Takes first file
 	for (int i = 0; i < size && files[i].fileName != ""; i++) {
 		files[i].plagiarism = 0;
+		// Takes all the other files
 		for (int j = 0; j < size && files[j].fileName != ""; j++) {
+			// Test if the file compared is not itself
 			if (j != i) {
+				// First function
 				files[i].plagiarism += files[i].percentageSameLines(files[j]);
 				plagiarismIndexesCounter++;
 			}
 		}
-		files[i].plagiarism /= plagiarismIndexesCounter;
+		//files[i].plagiarism /= plagiarismIndexesCounter;
 	}
 }
 std::ostream &operator<<(std::ostream &output,
