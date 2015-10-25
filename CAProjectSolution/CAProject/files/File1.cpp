@@ -7,3 +7,8 @@ int test1(){
 //line2
 //code
 //code
+//if (/* condition */)
+{
+	/* code */
+}
+//code

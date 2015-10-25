@@ -7,7 +7,8 @@ FilePlagiarism::FilePlagiarism(std::string flName, int tp, std::string pathToDir
 	type(tp),
 	pathToFile(pathToDir + '/' + flName),
 	content(getContent()),
-	plagiarism(0)
+	plagiarism(0),
+	next(nullptr)
 {}
 FilePlagiarism::~FilePlagiarism()
 {}
@@ -26,11 +27,11 @@ std::string FilePlagiarism::getFileName() const
 {
 	return fileName;
 }
-double FilePlagiarism::percentageSameLines(FilePlagiarism otherFile)
+double FilePlagiarism::percentageSameLines(FilePlagiarism* otherFile)
 {
 	int linesCounter = 0;
 	int sameLinesCounter = 0;
-	std::ifstream read(otherFile.pathToFile);
+	std::ifstream read(otherFile->pathToFile);
 	std::string line;
 	while (std::getline(read, line)) {
 		linesCounter++;

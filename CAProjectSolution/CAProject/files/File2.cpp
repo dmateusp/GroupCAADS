@@ -10,3 +10,9 @@ int test2(){
 //line2
 //code
 //code
+//code
+//code
+//if (/* condition */)
+{
+	/* code */
+}
