@@ -19,6 +19,8 @@ private:
 	FilePlagiarism* next;
 	// Reads the file and saves the content in the content member
 	std::string getContent() const;
+	// Reads the file, saves the content in content, then cleans it removing whitespace
+	std::string getCleanContent() const;
 	// Gets the percentage of same lines in two files
 	double percentageSameLines(FilePlagiarism* otherFile);
 public:

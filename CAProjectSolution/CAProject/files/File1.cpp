@@ -1,6 +1,9 @@
 //this file is the same as file 2
 //Some code
-int test1(){
+/*
+comment 
+*/
+int test1(){ // comment in same line as code
 	return 0;
 }
 //line3
