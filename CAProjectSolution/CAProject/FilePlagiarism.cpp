@@ -1,6 +1,7 @@
 #include "FilePlagiarism.h"
 #include <fstream>
 #include <algorithm>
+#include <ctype.h>
 FilePlagiarism::FilePlagiarism()
 {}
 FilePlagiarism::FilePlagiarism(std::string flName, int tp, std::string pathToDir)
@@ -26,7 +27,7 @@ std::string FilePlagiarism::getContent() const
 	return content;
 }
 
-// Clean. LMD
+// LMD
 std::string FilePlagiarism::getCleanContent() const
 {
 	std::ifstream read(pathToFile);
@@ -34,35 +35,89 @@ std::string FilePlagiarism::getCleanContent() const
 	std::string content;
 	bool isComment = false;
 	int posComment = 0;
+	int posCommentEnd = 0;
 	while (std::getline(read, line)) {
-		// Read lines into content without reading 
+		/*
+		------------------------------------------------------------------
+		CLEAN
+		------------------------------------------------------------------
+		*/
 
-		// First for comments // find position of the comment.
-		// if it returns a match (!= npos) then isComment TRUE
-		// line will be the substring from pos 0 to posComment
-		if ((posComment = line.find("//")) != std::string::npos) {
+		/*
+		---
+		Remove all comments
+		---
+		*/
+
+		/*
+		For single line comments
+		Find position of the comment. If it returns a match (!= npos)
+		Line to keep will be the substring from pos 0 to posComment
+		*/
+		if (((posComment = line.find("//")) != std::string::npos) && isComment == false) {
 			line = line.substr(0, posComment);
-			//isComment = true;
 			content += line;
 		}
-		else if ((posComment = line.find("/*")) != std::string::npos) {
-			isComment = true;
+		/*
+		For multi line comments
+		Find position of the start of the comment. If it returns a match (!= npos)
+		Line to keep will be the substring from pos 0 to posComment
+		isComment will remain true until end of comment is found
+		*/
+		else if (((posComment = line.find("/*")) != std::string::npos)&& isComment==false) {
+			//May be using multi line comment for single line comment		
+			if ((posCommentEnd = line.find("*/")) != std::string::npos) {
+				isComment = false;
+			}
+			// no code before comment
+			else if (posComment == 0) {
+				isComment = true;
+			}
+			// code before comment
+			else{
+				line = line.substr(0, posComment);
+				content += line;
+				isComment = true;
+			}
 		}
-		else if ((posComment = line.find("*/")) != std::string::npos) {
+		/*
+		For multi line comments
+		Find position of the end of the comment. If it returns a match (!= npos)
+		Line to keep will be the substring from posComment to end of string
+		isComment is now false
+		*/
+		else if (((posComment = line.find("*/")) != std::string::npos) && isComment == true) {
+			line = line.substr(posComment+2); // from the position after the end comment indicator
+			content += line;
 			isComment = false;
 		}
-		else {
+		/*
+		If there are no comments on this line
+		the line to keep will be the entire line
+		*/
+		else if (isComment==false) {
+			content += line;
 			isComment = false;
 		}
-
-		if (isComment == false) content += line;		
+		/*
+		In between start multi line comment and end of multi line comment
+		isComment == true then read next line. Not added to comment. No further actions.
+		*/
 	}
+
 	read.close();
-	// Clean whitespace
-	//content.erase(std::remove_if(content.begin(), content.end(), isspace), content.end());		
+
+	/*
+	---
+	Remove whitespace
+	---
+	*/
+
+	content.erase(std::remove_if(content.begin(), content.end(), isspace), content.end());
+
 	return content;
-	
 }
+
 std::string FilePlagiarism::getFileName() const
 {
 	return fileName;

@@ -4,7 +4,7 @@
 /*
 comment*
 */
-int test1(){ // comment in line with code
+int test3(){ // comment in line with code
 	return 3;
 }
 //hey
