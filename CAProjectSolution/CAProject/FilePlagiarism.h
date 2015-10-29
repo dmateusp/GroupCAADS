@@ -5,6 +5,13 @@
 class FilePlagiarism
 {
 	friend class DirectoryPlagiarism;
+	/*****************************************************************************************
+	* Learned @ http://www.tutorialspoint.com/cplusplus/input_output_operators_overloading.htm
+	* Operator << overloading
+	* is friend of DirectoryPlagiarism and FilePlagiarism
+	*****************************************************************************************/
+	friend std::ostream &operator<<(std::ostream &output,
+		const DirectoryPlagiarism &Dir);
 private:
 	std::string fileName = "";
 	std::string pathToFile;

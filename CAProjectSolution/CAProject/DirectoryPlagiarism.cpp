@@ -41,7 +41,6 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
 				*filePtr = FilePlagiarism(pent->d_name, pent->d_type, directoryName);
 				addFile(filePtr);
 				filePtr = nullptr;
-				// ERROR
 			}
 		}
 	}
@@ -87,19 +86,8 @@ void DirectoryPlagiarism::calculatePlagiarism() {
 	}
 	firstFilePtr, secondFilePtr = nullptr;
 }
-std::string DirectoryPlagiarism::getOutput() const {
-	FilePlagiarism *filePtr;
-	std::string output;
-	//double test = filePtr->getPlagiarism();
-	for (filePtr = head; filePtr; filePtr = filePtr->next) {
-		// This answer helped me figuring out how to convert a double to string :
-		// http://stackoverflow.com/a/332132
-		std::ostringstream stringStream;
-		stringStream << filePtr->getPlagiarism();
-		std::string plagiarismToString = stringStream.str();
-		output += "- File : " + filePtr->getFileName() + "| Plagiarism (0 for original, 1 for plagiarized) : " + plagiarismToString + "\n";
-	}
-	return output;
+const std::string DirectoryPlagiarism::getDirectoryName() const {
+	return directoryName;
 }
 std::ostream &operator<<(std::ostream &output,
 	const DirectoryPlagiarism &Dir)
@@ -107,7 +95,15 @@ std::ostream &operator<<(std::ostream &output,
 	output << "--------------------------------------" << std::endl;
 	output << "- Path to directory : " << Dir.directoryName << std::endl;
 	output << "- Files in directory : " << std::endl;
-	output << Dir.getOutput() << std::endl;
+	FilePlagiarism *filePtr;
+	for (filePtr = Dir.head; filePtr; filePtr = filePtr->next) {
+		// This answer helped me figuring out how to convert a double to string :
+		// http://stackoverflow.com/a/332132
+		std::ostringstream stringStream;
+		stringStream << filePtr->plagiarism;
+		std::string plagiarismToString = stringStream.str();
+		output << "- File : " << filePtr->fileName << "| Plagiarism (0 for original, 1 for plagiarized) : " << plagiarismToString << std::endl;
+	}
 	output << "--------------------------------------" << std::endl;
 	output << "Plagiarism detector using a : " << std::endl;
 	output << "- Same line detector " << std::endl;

@@ -8,7 +8,6 @@ FilePlagiarism::FilePlagiarism(std::string flName, int tp, std::string pathToDir
 	: fileName(flName) ,
 	type(tp),
 	pathToFile(pathToDir + '/' + flName),
-	//content(getContent()),
 	content(getCleanContent()),
 	plagiarism(0),
 	next(nullptr)
