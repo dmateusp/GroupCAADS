@@ -1,9 +1,12 @@
 #pragma once
-#ifndef FILEPLAGIARISM_H
-#define FILEPLAGIARISM_H
+#ifndef CAPROJECTSOLUTION_CAPROJECT_FILEPLAGIARISM_H_
+#define CAPROJECTSOLUTION_CAPROJECT_FILEPLAGIARISM_H_
+/*****************************************************************
+*                       Copyright 2015
+* <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
+*****************************************************************/
 #include <string>
-class FilePlagiarism
-{
+class FilePlagiarism {
     friend class DirectoryPlagiarism;
     /*****************************************************************************************
     * Learned @ http://www.tutorialspoint.com/cplusplus/input_output_operators_overloading.htm
@@ -12,7 +15,8 @@ class FilePlagiarism
     *****************************************************************************************/
     friend std::ostream &operator<<(std::ostream &output,
         const DirectoryPlagiarism &Dir);
-private:
+
+ private:
     std::string fileName = "";
     std::string pathToFile;
     std::string content;
@@ -26,11 +30,15 @@ private:
     FilePlagiarism* next;
     // Reads the file and saves the content in the content member
     std::string getContent() const;
-    // Reads the file, saves the content in content, then cleans it removing whitespace
+    /**********************************************
+	* Reads the file, saves the content in content,
+	* then cleans it removing whitespace
+	**********************************************/
     std::string getCleanContent() const;
     // Gets the percentage of same lines in two files
     double percentageSameLines(FilePlagiarism* otherFile);
-public:
+
+ public:
     FilePlagiarism();
     FilePlagiarism(std::string flName, int tp, std::string pathToDir);
     /****************************************************
@@ -43,4 +51,4 @@ public:
     // returns the plagiarism index (between 0 and 1)
     double getPlagiarism() const;
 };
-#endif
+#endif  // CAPROJECTSOLUTION_CAPROJECT_FILEPLAGIARISM_H_

@@ -1,10 +1,17 @@
-#include "FilePlagiarism.h"
+#include "./FilePlagiarism.h"
+#include <ctype.h>
+#include <string>
 #include <fstream>
 #include <algorithm>
-#include <ctype.h>
+/*****************************************************************
+*                       Copyright 2015
+* <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
+*****************************************************************/
 FilePlagiarism::FilePlagiarism()
 {}
-FilePlagiarism::FilePlagiarism(std::string flName, int tp, std::string pathToDir)
+FilePlagiarism::FilePlagiarism(std::string flName,
+                                int tp,
+                                std::string pathToDir)
     : fileName(flName) ,
     type(tp),
     pathToFile(pathToDir + '/' + flName),
@@ -14,8 +21,7 @@ FilePlagiarism::FilePlagiarism(std::string flName, int tp, std::string pathToDir
 {}
 FilePlagiarism::~FilePlagiarism()
 {}
-std::string FilePlagiarism::getContent() const
-{
+std::string FilePlagiarism::getContent() const {
     std::ifstream read(pathToFile);
     std::string line;
     std::string content;
@@ -27,8 +33,7 @@ std::string FilePlagiarism::getContent() const
 }
 
 // LMD
-std::string FilePlagiarism::getCleanContent() const
-{
+std::string FilePlagiarism::getCleanContent() const {
     std::ifstream read(pathToFile);
     std::string line;
     std::string content;
@@ -53,7 +58,12 @@ std::string FilePlagiarism::getCleanContent() const
         Find position of the comment. If it returns a match (!= npos)
         Line to keep will be the substring from pos 0 to posComment
         */
-        if (((posComment = line.find("//")) != std::string::npos) && isComment == false) {
+        if (
+            (
+                (posComment = line.find("//"))
+                != std::string::npos
+            )
+            && !isComment) {
             line = line.substr(0, posComment);
             content += line;
         }
@@ -63,8 +73,14 @@ std::string FilePlagiarism::getCleanContent() const
         Line to keep will be the substring from pos 0 to posComment
         isComment will remain true until end of comment is found
         */
-        else if (((posComment = line.find("/*")) != std::string::npos)&& isComment==false) {
-            //May be using multi line comment for single line comment		
+        else if (
+            (
+                (posComment = line.find("/*"))
+                != std::string::npos
+            )
+                && !isComment
+            ) {
+            // May be using multi line comment for single line comment
             if ((posCommentEnd = line.find("*/")) != std::string::npos) {
                 isComment = false;
             }
@@ -73,7 +89,7 @@ std::string FilePlagiarism::getCleanContent() const
                 isComment = true;
             }
             // code before comment
-            else{
+            else {
                 line = line.substr(0, posComment);
                 content += line;
                 isComment = true;
@@ -85,8 +101,10 @@ std::string FilePlagiarism::getCleanContent() const
         Line to keep will be the substring from posComment to end of string
         isComment is now false
         */
-        else if (((posComment = line.find("*/")) != std::string::npos) && isComment == true) {
-            line = line.substr(posComment+2); // from the position after the end comment indicator
+        else if (((posComment = line.find("*/")) != std::string::npos)
+                    && isComment) {
+            // from the position after the end comment indicator
+            line = line.substr(posComment+2);
             content += line;
             isComment = false;
         }
@@ -94,7 +112,7 @@ std::string FilePlagiarism::getCleanContent() const
         If there are no comments on this line
         the line to keep will be the entire line
         */
-        else if (isComment==false) {
+        else if (!isComment) {
             content += line;
             isComment = false;
         }
@@ -112,30 +130,31 @@ std::string FilePlagiarism::getCleanContent() const
     ---
     */
 
-    content.erase(std::remove_if(content.begin(), content.end(), isspace), content.end());
-
+    content.erase(
+        std::remove_if(
+            content.begin(),
+            content.end(),
+            isspace),
+            content.end());
     return content;
 }
 
-std::string FilePlagiarism::getFileName() const
-{
+std::string FilePlagiarism::getFileName() const {
     return fileName;
 }
-double FilePlagiarism::percentageSameLines(FilePlagiarism* otherFile)
-{
+double FilePlagiarism::percentageSameLines(FilePlagiarism* otherFile) {
     int linesCounter = 0;
     int sameLinesCounter = 0;
     std::ifstream read(otherFile->pathToFile);
     std::string line;
     while (std::getline(read, line)) {
         linesCounter++;
-        if (content.find(line)!=std::string::npos)
+        if (content.find(line) != std::string::npos)
             sameLinesCounter++;
     }
     read.close();
-    return sameLinesCounter / (double)linesCounter;
+    return sameLinesCounter / static_cast<double>(linesCounter);
 }
-double FilePlagiarism::getPlagiarism() const
-{
+double FilePlagiarism::getPlagiarism() const {
     return plagiarism;
 }

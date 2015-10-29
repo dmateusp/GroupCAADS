@@ -1,10 +1,17 @@
-#include "DirectoryPlagiarism.h"
+/*****************************************************************
+*                       Copyright 2015
+* <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
+*****************************************************************/
+#include "./DirectoryPlagiarism.h"
 #include <sstream>
-DirectoryPlagiarism::~DirectoryPlagiarism()
-{
+#include <string>
+DirectoryPlagiarism::~DirectoryPlagiarism() {
     FilePlagiarism *filePtr;
-    // Since we delete the first pointer we loose the ->next, so we need to keep track
-    // of the next pointer by using a second pointer
+    /******************************************************
+	* Since we delete the first pointer we loose the ->next, 
+	* so we need to keep track
+	* of the next pointer by using a second pointer
+    ******************************************************/ 
     FilePlagiarism *nextFilePtr;
     for (filePtr = head; filePtr; filePtr = nextFilePtr) {
         nextFilePtr = filePtr->next;
@@ -14,9 +21,8 @@ DirectoryPlagiarism::~DirectoryPlagiarism()
 }
 DirectoryPlagiarism::DirectoryPlagiarism()
 {}
-DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName) 
-    : directoryName(dirName)
-{
+DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
+    : directoryName(dirName) {
     head = new FilePlagiarism;
     // We need a pointer to the directory
     DIR *dirPtr = NULL;
@@ -33,12 +39,14 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
         if (!pent) {
             // Reading error
             throw 26;
-        }
-        else {
+        } else {
             // Does not take the directory '.' and '..'
             if (pent->d_type != 16384) {
                 FilePlagiarism* filePtr = new FilePlagiarism;
-                *filePtr = FilePlagiarism(pent->d_name, pent->d_type, directoryName);
+                *filePtr = FilePlagiarism(
+                                pent->d_name,
+                                pent->d_type,
+                                directoryName);
                 addFile(filePtr);
                 filePtr = nullptr;
             }
@@ -46,20 +54,18 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
     }
     calculatePlagiarism();
 }
-FilePlagiarism * DirectoryPlagiarism::getFileAt(int index)
-{
+FilePlagiarism * DirectoryPlagiarism::getFileAt(int index) {
     int i = 0;
     FilePlagiarism* filePtr;
-    for (filePtr = head; filePtr && i<index; filePtr = filePtr->next) {
+    for (filePtr = head; filePtr && i < index; filePtr = filePtr->next) {
         i++;
     }
     return filePtr;
 }
-void DirectoryPlagiarism::addFile(FilePlagiarism* fPtr)
-{
+void DirectoryPlagiarism::addFile(FilePlagiarism* fPtr) {
     FilePlagiarism* filePtr;
-    for (filePtr = head; filePtr->next; filePtr=filePtr->next);
-    if (head->fileName=="")
+    for (filePtr = head; filePtr->next; filePtr = filePtr->next) continue;
+    if (head->fileName == "")
         head = fPtr;
     else
         filePtr->next = fPtr;
@@ -74,11 +80,15 @@ void DirectoryPlagiarism::calculatePlagiarism() {
     for (firstFilePtr = head; firstFilePtr; firstFilePtr = firstFilePtr->next) {
         firstFilePtr->plagiarism = 0;
         // Takes all the other files
-        for (secondFilePtr = head; secondFilePtr; secondFilePtr=secondFilePtr->next) {
+        for (
+            secondFilePtr = head;
+            secondFilePtr;
+            secondFilePtr = secondFilePtr->next) {
             // Test if the file compared is not itself
             if (firstFilePtr != secondFilePtr) {
                 // First function
-                firstFilePtr->plagiarism += firstFilePtr->percentageSameLines(secondFilePtr);
+                firstFilePtr->plagiarism +=
+                    firstFilePtr->percentageSameLines(secondFilePtr);
                 plagiarismIndexesCounter++;
             }
         }
@@ -90,19 +100,25 @@ const std::string DirectoryPlagiarism::getDirectoryName() const {
     return directoryName;
 }
 std::ostream &operator<<(std::ostream &output,
-    const DirectoryPlagiarism &Dir)
-{
+    const DirectoryPlagiarism &Dir) {
     output << "--------------------------------------" << std::endl;
     output << "- Path to directory : " << Dir.directoryName << std::endl;
     output << "- Files in directory : " << std::endl;
     FilePlagiarism *filePtr;
     for (filePtr = Dir.head; filePtr; filePtr = filePtr->next) {
-        // This answer helped me figuring out how to convert a double to string :
-        // http://stackoverflow.com/a/332132
+        /****************************************
+        * This answer helped me figuring
+        * out how to convert a double to string :
+        * http://stackoverflow.com/a/332132
+        ****************************************/
         std::ostringstream stringStream;
         stringStream << filePtr->plagiarism;
         std::string plagiarismToString = stringStream.str();
-        output << "- File : " << filePtr->fileName << "| Plagiarism (0 for original, 1 for plagiarized) : " << plagiarismToString << std::endl;
+        output << "- File : "
+            << filePtr->fileName
+            << "| Plagiarism (0 for original, 1 for plagiarized) : "
+            << plagiarismToString
+            << std::endl;
     }
     output << "--------------------------------------" << std::endl;
     output << "Plagiarism detector using a : " << std::endl;

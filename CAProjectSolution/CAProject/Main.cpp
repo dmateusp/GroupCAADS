@@ -1,4 +1,8 @@
-#include "DirectoryPlagiarism.h"
+/*****************************************************************
+*                       Copyright 2015
+* <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
+*****************************************************************/
+#include "./DirectoryPlagiarism.h"
 #include <iostream>
 int main() {
     // The files are in ./files/[fileName]
@@ -11,7 +15,7 @@ int main() {
     * functionnality a developer would
     * expect if he used our code
     **************************************/
-    //FilePlagiarism* fptr=dir.getFileAt(4);
+    // FilePlagiarism* fptr=dir.getFileAt(4);
     system("pause");
     return 0;
 }
