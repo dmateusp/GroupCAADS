@@ -86,7 +86,7 @@ std::string FilePlagiarism::getCleanContent() const
 		isComment is now false
 		*/
 		else if (((posComment = line.find("*/")) != std::string::npos) && isComment == true) {
-			line = line.substr(posComment+2); // from the position after the end comment indicator
+			line = line.substr(posComment+2); // from the position after the end comment indicator which is length = 2
 			content += line;
 			isComment = false;
 		}
@@ -116,6 +116,8 @@ std::string FilePlagiarism::getCleanContent() const
 
 	return content;
 }
+
+
 
 std::string FilePlagiarism::getFileName() const
 {

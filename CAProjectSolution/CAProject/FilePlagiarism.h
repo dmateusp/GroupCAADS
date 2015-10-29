@@ -28,6 +28,8 @@ private:
 	std::string getContent() const;
 	// Reads the file, saves the content in content, then cleans it removing whitespace
 	std::string getCleanContent() const;
+	// tokenizes clean content
+	std::string tokenizeContent(std::string content) const;
 	// Gets the percentage of same lines in two files
 	double percentageSameLines(FilePlagiarism* otherFile);
 public:
