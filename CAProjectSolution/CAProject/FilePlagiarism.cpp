@@ -139,6 +139,17 @@ std::string FilePlagiarism::getCleanContent() const {
     return content;
 }
 
+std::string FilePlagiarism::tokenizeContent(std::string content) const
+{
+	/*
+	------------------------------------------------------------------
+	TOKENIZE
+	------------------------------------------------------------------
+	*/
+
+	return content;
+}
+
 std::string FilePlagiarism::getFileName() const {
     return fileName;
 }
