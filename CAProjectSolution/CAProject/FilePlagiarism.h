@@ -36,9 +36,7 @@ class FilePlagiarism {
 	**********************************************/
     std::string getCleanContent() const;
 	// tokenize content
-	std::string tokenizeContent(std::string& content) const;
-	// generate k-grams
-	std::string kGramGeneration(std::string & content) const;
+	void tokenizeContent(std::string *ptrContent) const;	
     // Gets the percentage of same lines in two files
     double percentageSameLines(FilePlagiarism* otherFile);
 
@@ -50,7 +48,7 @@ class FilePlagiarism {
     * and destructs all the nodes (FilePlagiarism)
     ****************************************************/
     virtual ~FilePlagiarism();
-	// returns the file name
+    // returns the file name
     std::string getFileName() const;
     // returns the plagiarism index (between 0 and 1)
     double getPlagiarism() const;
