@@ -149,91 +149,120 @@ std::string FilePlagiarism::getCleanContent() const {
     return content;
 }
 
+/*
+------------------------------------------------------------------
+TOKENIZE
+------------------------------------------------------------------
+*/
 void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
-    /*
-    ------------------------------------------------------------------
-    TOKENIZE
-    ------------------------------------------------------------------
-    */
 
-    /*
-    ---
-    FUNCTIONS
-    ---
-    */
+	/*
+	---
+	FUNCTIONS
+	---
+	*/
 
-    /*
-    ---
-    LOOPS
-    ---
-    */
+	// MAIN
+	/*
+	std::regex beginMain("intmain\\(*\\)\\{|voidmain\\(*\\)\\{");
+	// the | behaves like an OR
+	// the \\ ensures the literal character inmediately after is checked
+	// the * is wildcard
+	*contentPtr = std::regex_replace(*contentPtr, beginMain, "BEGINMAIN");
+	*/
 
-    /*
-    ---
-    DATA TYPES
-    ---
-    */
+	// BOOLFUNC
 
-    // BOOLEAN
-    std::regex boole("bool");
-    *contentPtr = std::regex_replace(*contentPtr, boole, "BOOLEAN");
+	std::regex boolfunc("bool");
+	*contentPtr = std::regex_replace(*contentPtr, boolfunc, "BEGINBOOLFUNC");
 
-    // VARCHAR
-    std::regex varcha("signedchar|unsignedchar|char");
-    *contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
 
-    // VARINT
-    std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-    *contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
+	/*
+	// CHARFUNC
+	std::regex varcha("signedchar|unsignedchar|char");
+	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
 
-    // VARFLOAT
-    std::regex varflo("float|double|long double");
-    *contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
+	// INTFUNC
+	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
+	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
 
-    /*
-    ---
-    OPERATORS
-    ---
-    */
+	// FLOATFUNC
+	std::regex varflo("float|double|long double");
+	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
+	*/
 
-    // Keep loose or strict token set?
-    // From more to less complex as first match is chosen
 
-    // RELATIONAL OPERATORS
-    std::regex relOp("==|!=|>=|<=|<|>");
-    *contentPtr = std::regex_replace(*contentPtr, relOp, "RELATIONALOP");
+	/*
+	---
+	LOOPS
+	---
+	*/
 
-    // COMPOUND ASSIGNMENT
-    /*
-    std::regex compAs("+=|-=|*=|/=|%=|>>=|<<=|&=");
-    *contentPtr = std::regex_replace(*contentPtr, compAs, "COMPOUNDASSIGN");
-    */    
-    // INCREMENT
-    /*
-    std::regex increm("++");
-    *contentPtr = std::regex_replace(*contentPtr, increm, "INCREMENT");
-    */
+	/*
+	---
+	VARIABLES
+	---
+	*/
+	/*
+	// VARBOOL
+	std::regex boole("bool");
+	*contentPtr = std::regex_replace(*contentPtr, boole, "VARBOOL");
+	*/
+	// VARCHAR
+	std::regex varcha("signedchar|unsignedchar|char");
+	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
 
-    // DECREMENT
-    std::regex decrem("--");
-    *contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
+	// VARINT
+	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
+	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
 
-    // LOGICAL OPERATORS
-    /*
-    std::regex log("!|&&|||");
-    *contentPtr = std::regex_replace(*contentPtr, log, "LOGICALOP");
-    */
+	// VARFLOAT
+	std::regex varflo("float|double|long double");
+	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
 
-    // ARITHMETIC OPERATORS
-    /*
-    std::regex ariOp("+|-|*|/|%");
-    *contentPtr = std::regex_replace(*contentPtr, ariOp, "ARITHMETICOP");
-    */
+	/*
+	---
+	OPERATORS
+	---
+	*/
+	// Keep loose or strict token set?
+	// From more to less complex as first match is chosen
 
-    // ASSIGN
-    std::regex assign("=");
-    *contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
-    // BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
+	// RELATIONAL OPERATORS	
+	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
+	*contentPtr = std::regex_replace(*contentPtr, relOp, "RELATIONALOP");
+
+	// COMPOUND ASSIGNMENT	
+	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
+	*contentPtr = std::regex_replace(*contentPtr, compAs, "COMPOUNDASSIGN");
+
+	// INCREMENT
+	std::regex increm("\\++");
+	*contentPtr = std::regex_replace(*contentPtr, increm, "INCREMENT");
+
+	// DECREMENT
+	std::regex decrem("\\--");
+	*contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
+
+	// LOGICAL OPERATORS
+	/*
+	std::regex log("\\!|\\&&|\\||");
+	*contentPtr = std::regex_replace(*contentPtr, log, "LOGICALOP");
+	*/
+
+	// ARITHMETIC OPERATORS
+	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
+	*contentPtr = std::regex_replace(*contentPtr, ariOp, "ARITHMETICOP");
+
+	// ASSIGN
+	std::regex assign("=");
+	*contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
+
+	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
+	/*
+	if (not list of regex)
+	remove
+	*/
 }
 
 std::string FilePlagiarism::getFileName() const {
