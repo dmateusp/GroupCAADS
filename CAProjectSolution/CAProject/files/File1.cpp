@@ -5,6 +5,24 @@ multi line
 comment1 
 */
 int                     test1(){ // comment in same line as code
+	int a = 2;
+	int b = 3;
+	bool isBo = true;	
+	char c = 'a';
+	float flo1 = 10.1;
+	double do1 = 20.2;
+	if (a == b){
+		a++;
+	}
+	
+	a++;
+	a += b;
+	a--;
+	a = a*5;
+	
+	if ((a == 4) && (b==5)){
+		b++;
+	}
 	return 0; /*code before
 	comment
 	*/
