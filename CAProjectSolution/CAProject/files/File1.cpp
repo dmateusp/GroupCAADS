@@ -4,6 +4,10 @@
 multi line
 comment1 
 */
+int main(){ 
+return 0;
+}
+
 int                     test1(){ // comment in same line as code
 	int a = 2;
 	int b = 3;
@@ -26,6 +30,10 @@ int                     test1(){ // comment in same line as code
 	return 0; /*code before
 	comment
 	*/
+}
+
+bool test(){
+	return true;
 }
 /*
 multi line

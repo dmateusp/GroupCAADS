@@ -3,9 +3,14 @@
 /*
 comment
 */
+void main (){
+	
+}
 int test2(){ // comment in same line as code
 	return 1;
 }
+
+
 //test some differences
 //some test
 //some other line

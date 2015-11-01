@@ -146,19 +146,48 @@ std::string FilePlagiarism::getCleanContent() const {
     return content;
 }
 
+/*
+------------------------------------------------------------------
+TOKENIZE
+------------------------------------------------------------------
+*/
 std::string FilePlagiarism::tokenizeContent(std::string& content) const
 {
-	/*
-	------------------------------------------------------------------
-	TOKENIZE
-	------------------------------------------------------------------
-	*/
-
 	/*
 	---
 	FUNCTIONS
 	---
 	*/
+
+	// MAIN
+	/*
+	std::regex beginMain("intmain\\(*\\)\\{|voidmain\\(*\\)\\{"); 
+	// the | behaves like an OR
+	// the \\ ensures the literal character inmediately after is checked
+	// the * is wildcard
+	content = std::regex_replace(content, beginMain, "BEGINMAIN");
+	*/
+
+	// BOOLFUNC
+	/*
+	std::regex boolfunc("bool*\");
+	content = std::regex_replace(content, boolfunc, "BEGINBOOLFUNC");
+	*/
+
+	/*
+	// CHARFUNC
+	std::regex varcha("signedchar|unsignedchar|char");
+	content = std::regex_replace(content, varcha, "VARCHAR");
+
+	// INTFUNC
+	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
+	content = std::regex_replace(content, varint, "VARINT");
+
+	// FLOATFUNC
+	std::regex varflo("float|double|long double");
+	content = std::regex_replace(content, varflo, "VARFLOAT");
+	*/
+
 
 	/*
 	---
@@ -168,14 +197,14 @@ std::string FilePlagiarism::tokenizeContent(std::string& content) const
 
 	/*
 	---
-	DATA TYPES
+	VARIABLES
 	---
 	*/
-
-	// BOOLEAN
+	/*
+	// VARBOOL
 	std::regex boole("bool");
-	content = std::regex_replace(content, boole, "BOOLEAN");
-
+	content = std::regex_replace(content, boole, "VARBOOL");
+	*/
 	// VARCHAR
 	std::regex varcha("signedchar|unsignedchar|char");
 	content = std::regex_replace(content, varcha, "VARCHAR");
@@ -193,48 +222,55 @@ std::string FilePlagiarism::tokenizeContent(std::string& content) const
 	OPERATORS
 	---
 	*/
-
 	// Keep loose or strict token set?
 	// From more to less complex as first match is chosen
 
 	// RELATIONAL OPERATORS	
-	std::regex relOp("==|!=|>=|<=|<|>");
+	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
 	content = std::regex_replace(content, relOp, "RELATIONALOP");
 
-	// COMPOUND ASSIGNMENT
-	/*
-	std::regex compAs("+=|-=|*=|/=|%=|>>=|<<=|&=");
-	content = std::regex_replace(content, compAs, "COMPOUNDASSIGN");
-	*/
-	
+	// COMPOUND ASSIGNMENT	
+	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
+	content = std::regex_replace(content, compAs, "COMPOUNDASSIGN");	
 
 	// INCREMENT
-	/*
-	std::regex increm("++");
-	content = std::regex_replace(content, increm, "INCREMENT");
-	*/
+	std::regex increm("\\++");
+	content = std::regex_replace(content, increm, "INCREMENT");	
 
 	// DECREMENT
-	std::regex decrem("--");
+	std::regex decrem("\\--");
 	content = std::regex_replace(content, decrem, "DECREMENT");
 
 	// LOGICAL OPERATORS
 	/*
-	std::regex log("!|&&|||");
+	std::regex log("\\!|\\&&|\\||");
 	content = std::regex_replace(content, log, "LOGICALOP");
 	*/
 
 	// ARITHMETIC OPERATORS
-	/*
-	std::regex ariOp("+|-|*|/|%");
+	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
 	content = std::regex_replace(content, ariOp, "ARITHMETICOP");
-	*/
 
 	// ASSIGN
 	std::regex assign("=");
 	content = std::regex_replace(content, assign, "ASSIGN");
 	
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
+	/*
+	if (not list of regex)
+	remove
+	*/
+	return content;
+}
+
+/*
+------------------------------------------------------------------
+K-Gram Generation
+------------------------------------------------------------------
+*/
+std::string FilePlagiarism::kGramGeneration(std::string& content) const
+{
+	// INSERT code for k gram generation here
 	return content;
 }
 
