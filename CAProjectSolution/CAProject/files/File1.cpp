@@ -4,7 +4,7 @@
 multi line
 comment1 
 */
-int main(){ 
+int main(a& s*){ 
 return 0;
 }
 
@@ -24,7 +24,7 @@ int                     test1(){ // comment in same line as code
 	a--;
 	a = a*5;
 	
-	if ((a == 4) && (b==5)){
+	if ((a == 4) && (b==5) || !isBo){
 		b++;
 	}
 	return 0; /*code before
@@ -32,8 +32,16 @@ int                     test1(){ // comment in same line as code
 	*/
 }
 
-bool test(){
+bool testBooleanFuncion(){
 	return true;
+}
+
+char testCharFunction(){
+	return a;
+}
+
+double testDoubleFunction(){
+	return 10.1;
 }
 /*
 multi line

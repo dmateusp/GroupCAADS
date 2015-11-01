@@ -156,6 +156,11 @@ TOKENIZE
 */
 void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 
+	// | behaves like an OR
+	// \\ ensures the literal character inmediately after is checked
+	// [a-zA-Z0-9&*] any alphanumerical character, & or *
+	// * any number of ocurrences
+
 	/*
 	---
 	FUNCTIONS
@@ -163,34 +168,24 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	*/
 
 	// MAIN
-	/*
-	std::regex beginMain("intmain\\(*\\)\\{|voidmain\\(*\\)\\{");
-	// the | behaves like an OR
-	// the \\ ensures the literal character inmediately after is checked
-	// the * is wildcard
-	*contentPtr = std::regex_replace(*contentPtr, beginMain, "BEGINMAIN");
-	*/
-
+	std::regex mainfunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, mainfunc, "MAIN");
+	
 	// BOOLFUNC
+	std::regex boolfunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, boolfunc, "BOOLFUNC");
 
-	std::regex boolfunc("bool");
-	*contentPtr = std::regex_replace(*contentPtr, boolfunc, "BEGINBOOLFUNC");
-
-
-	/*
 	// CHARFUNC
-	std::regex varcha("signedchar|unsignedchar|char");
-	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
-
+	std::regex charfunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, charfunc, "CHARFUNC");
+	
 	// INTFUNC
-	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
+	std::regex intfunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, intfunc, "INTFUNC");
 
 	// FLOATFUNC
-	std::regex varflo("float|double|long double");
-	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
-	*/
-
+	std::regex flofunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, flofunc, "FLOATFUNC");
 
 	/*
 	---
@@ -203,11 +198,11 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	VARIABLES
 	---
 	*/
-	/*
+	
 	// VARBOOL
 	std::regex boole("bool");
 	*contentPtr = std::regex_replace(*contentPtr, boole, "VARBOOL");
-	*/
+
 	// VARCHAR
 	std::regex varcha("signedchar|unsignedchar|char");
 	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
@@ -225,7 +220,6 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	OPERATORS
 	---
 	*/
-	// Keep loose or strict token set?
 	// From more to less complex as first match is chosen
 
 	// RELATIONAL OPERATORS	
@@ -245,10 +239,8 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	*contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
 
 	// LOGICAL OPERATORS
-	/*
-	std::regex log("\\!|\\&&|\\||");
-	*contentPtr = std::regex_replace(*contentPtr, log, "LOGICALOP");
-	*/
+	std::regex logOp("[!]{1}|[&]{2}|[|]{2}"); // exactly 1 {1} or 2 {2} occurrences == ! OR && OR ||
+	*contentPtr = std::regex_replace(*contentPtr, logOp, "LOGICALOP");
 
 	// ARITHMETIC OPERATORS
 	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
