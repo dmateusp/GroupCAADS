@@ -1,9 +1,9 @@
 #include "./FilePlagiarism.h"
 #include <ctype.h>
-#include <string>
-#include <fstream>
-#include <algorithm>
 #include <regex>
+#include <string>
+#include <algorithm>
+#include <fstream>
 /*****************************************************************
 *                       Copyright 2015
 * <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
@@ -138,104 +138,102 @@ std::string FilePlagiarism::getCleanContent() const {
             isspace),
             content.end());
 
-	// Tokenize
-	/*
-	WE MAY NEED TO CHANGE THE WAY WE CALL THIS!!!
-	*/
-	content = tokenizeContent(content);
+    // Tokenize
+    /*
+    WE MAY NEED TO CHANGE THE WAY WE CALL THIS!!!
+    */
+	std::string* contentPtr;
+	contentPtr = &content;
+    tokenizeContent(contentPtr);
+	contentPtr = nullptr;
     return content;
 }
 
-std::string FilePlagiarism::tokenizeContent(std::string& content) const
-{
-	/*
-	------------------------------------------------------------------
-	TOKENIZE
-	------------------------------------------------------------------
-	*/
+void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
+    /*
+    ------------------------------------------------------------------
+    TOKENIZE
+    ------------------------------------------------------------------
+    */
 
-	/*
-	---
-	FUNCTIONS
-	---
-	*/
+    /*
+    ---
+    FUNCTIONS
+    ---
+    */
 
-	/*
-	---
-	LOOPS
-	---
-	*/
+    /*
+    ---
+    LOOPS
+    ---
+    */
 
-	/*
-	---
-	DATA TYPES
-	---
-	*/
+    /*
+    ---
+    DATA TYPES
+    ---
+    */
 
-	// BOOLEAN
-	std::regex boole("bool");
-	content = std::regex_replace(content, boole, "BOOLEAN");
+    // BOOLEAN
+    std::regex boole("bool");
+    *contentPtr = std::regex_replace(*contentPtr, boole, "BOOLEAN");
 
-	// VARCHAR
-	std::regex varcha("signedchar|unsignedchar|char");
-	content = std::regex_replace(content, varcha, "VARCHAR");
+    // VARCHAR
+    std::regex varcha("signedchar|unsignedchar|char");
+    *contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
 
-	// VARINT
-	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	content = std::regex_replace(content, varint, "VARINT");
+    // VARINT
+    std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
+    *contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
 
-	// VARFLOAT
-	std::regex varflo("float|double|long double");
-	content = std::regex_replace(content, varflo, "VARFLOAT");	
+    // VARFLOAT
+    std::regex varflo("float|double|long double");
+    *contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
 
-	/*
-	---
-	OPERATORS
-	---
-	*/
+    /*
+    ---
+    OPERATORS
+    ---
+    */
 
-	// Keep loose or strict token set?
-	// From more to less complex as first match is chosen
+    // Keep loose or strict token set?
+    // From more to less complex as first match is chosen
 
-	// RELATIONAL OPERATORS	
-	std::regex relOp("==|!=|>=|<=|<|>");
-	content = std::regex_replace(content, relOp, "RELATIONALOP");
+    // RELATIONAL OPERATORS
+    std::regex relOp("==|!=|>=|<=|<|>");
+    *contentPtr = std::regex_replace(*contentPtr, relOp, "RELATIONALOP");
 
-	// COMPOUND ASSIGNMENT
-	/*
-	std::regex compAs("+=|-=|*=|/=|%=|>>=|<<=|&=");
-	content = std::regex_replace(content, compAs, "COMPOUNDASSIGN");
-	*/
-	
+    // COMPOUND ASSIGNMENT
+    /*
+    std::regex compAs("+=|-=|*=|/=|%=|>>=|<<=|&=");
+    *contentPtr = std::regex_replace(*contentPtr, compAs, "COMPOUNDASSIGN");
+    */    
+    // INCREMENT
+    /*
+    std::regex increm("++");
+    *contentPtr = std::regex_replace(*contentPtr, increm, "INCREMENT");
+    */
 
-	// INCREMENT
-	/*
-	std::regex increm("++");
-	content = std::regex_replace(content, increm, "INCREMENT");
-	*/
+    // DECREMENT
+    std::regex decrem("--");
+    *contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
 
-	// DECREMENT
-	std::regex decrem("--");
-	content = std::regex_replace(content, decrem, "DECREMENT");
+    // LOGICAL OPERATORS
+    /*
+    std::regex log("!|&&|||");
+    *contentPtr = std::regex_replace(*contentPtr, log, "LOGICALOP");
+    */
 
-	// LOGICAL OPERATORS
-	/*
-	std::regex log("!|&&|||");
-	content = std::regex_replace(content, log, "LOGICALOP");
-	*/
+    // ARITHMETIC OPERATORS
+    /*
+    std::regex ariOp("+|-|*|/|%");
+    *contentPtr = std::regex_replace(*contentPtr, ariOp, "ARITHMETICOP");
+    */
 
-	// ARITHMETIC OPERATORS
-	/*
-	std::regex ariOp("+|-|*|/|%");
-	content = std::regex_replace(content, ariOp, "ARITHMETICOP");
-	*/
-
-	// ASSIGN
-	std::regex assign("=");
-	content = std::regex_replace(content, assign, "ASSIGN");
-	
-	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
-	return content;
+    // ASSIGN
+    std::regex assign("=");
+    *contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
+    // BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
 }
 
 std::string FilePlagiarism::getFileName() const {

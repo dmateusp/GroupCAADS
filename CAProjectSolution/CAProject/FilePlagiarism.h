@@ -36,7 +36,7 @@ class FilePlagiarism {
 	**********************************************/
     std::string getCleanContent() const;
 	// tokenize content
-	std::string tokenizeContent(std::string& content) const;	
+	void tokenizeContent(std::string *ptrContent) const;	
     // Gets the percentage of same lines in two files
     double percentageSameLines(FilePlagiarism* otherFile);
 
