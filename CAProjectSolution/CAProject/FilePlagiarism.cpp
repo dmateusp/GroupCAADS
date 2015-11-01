@@ -169,10 +169,10 @@ std::string FilePlagiarism::tokenizeContent(std::string& content) const
 	*/
 
 	// BOOLFUNC
-	/*
-	std::regex boolfunc("bool*\");
+	
+	std::regex boolfunc("bool");
 	content = std::regex_replace(content, boolfunc, "BEGINBOOLFUNC");
-	*/
+	
 
 	/*
 	// CHARFUNC
