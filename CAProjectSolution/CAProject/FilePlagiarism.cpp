@@ -166,30 +166,77 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	FUNCTIONS
 	---
 	*/
-
 	// MAIN
-	std::regex mainfunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, mainfunc, "MAIN");
+	std::regex mainFunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, mainFunc, "MAIN");
 	
 	// BOOLFUNC
-	std::regex boolfunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, boolfunc, "BOOLFUNC");
+	std::regex boolFunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, boolFunc, "BOOLFUNC");
 
 	// CHARFUNC
-	std::regex charfunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, charfunc, "CHARFUNC");
+	std::regex charFunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, charFunc, "CHARFUNC");
 	
 	// INTFUNC
-	std::regex intfunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, intfunc, "INTFUNC");
+	std::regex intFunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, intFunc, "INTFUNC");
 
 	// FLOATFUNC
-	std::regex flofunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, flofunc, "FLOATFUNC");
+	std::regex floFunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, floFunc, "FLOATFUNC");
 
 	/*
 	---
-	LOOPS
+	FLOW CONTROL
+	---
+	*/
+
+	// IF
+	std::regex flowIf("if\\(");
+	*contentPtr = std::regex_replace(*contentPtr, flowIf, "IF");
+
+	// ELSE
+	std::regex flowElse("else");
+	*contentPtr = std::regex_replace(*contentPtr, flowElse, "ELSE");
+
+	// FOR LOOP
+	std::regex forLoop("for\\(");
+	*contentPtr = std::regex_replace(*contentPtr, forLoop, "FORLOOP");
+
+	// WHILE LOOP
+	std::regex whileLoop("while\\(");
+	*contentPtr = std::regex_replace(*contentPtr, whileLoop, "WHILELOOP");
+
+	// DO
+	std::regex flowDo("do\\{");
+	*contentPtr = std::regex_replace(*contentPtr, flowDo, "DO");
+
+	// BREAK
+	std::regex flowBreak("break\\;");
+	*contentPtr = std::regex_replace(*contentPtr, flowBreak, "BREAK");
+
+	// CONTINUE
+	std::regex flowContinue("continue\\;");
+	*contentPtr = std::regex_replace(*contentPtr, flowContinue, "CONTINUE");
+
+	// SWITCH
+	std::regex flowSwitch("switch\\([a-zA-Z0-9]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, flowSwitch, "SWITCH");
+
+	// CASE
+	std::regex flowCase("case[a-zA-Z0-9]*\\:");
+	*contentPtr = std::regex_replace(*contentPtr, flowCase, "CASE");
+
+	/*
+	---
+	CLASS
+	---
+	*/
+
+	/*
+	---
+	IO
 	---
 	*/
 
@@ -249,6 +296,10 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	// ASSIGN
 	std::regex assign("=");
 	*contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
+
+	// RETURN
+	std::regex ret("return");
+	*contentPtr = std::regex_replace(*contentPtr, ret, "RETURN");
 
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
 	/*
