@@ -28,7 +28,12 @@ FilePlagiarism::FilePlagiarism(std::string flName,
 FilePlagiarism::~FilePlagiarism()
 {}
 const int FilePlagiarism::ARRAYSIZE;
-// LMD
+
+/*
+------------------------------------------------------------------
+CLEAN
+------------------------------------------------------------------
+*/
 void FilePlagiarism::getCleanContent() {
     std::ifstream read(pathToFile);
     std::string line;
@@ -36,12 +41,6 @@ void FilePlagiarism::getCleanContent() {
     int posComment = 0;
     int posCommentEnd = 0;
     while (std::getline(read, line)) {
-        /*
-        ------------------------------------------------------------------
-        CLEAN
-        ------------------------------------------------------------------
-        */
-
         /*
         ---
         Remove all comments
@@ -283,32 +282,6 @@ void FilePlagiarism::tokenizeContent() {
     std::regex assign("=");
     tokenizedContent = std::regex_replace(tokenizedContent, assign, "#ASSIGN$");
 
-    // REMOVE ANYTHING THAT IS not a token
-    /*std::regex rem("(? <= \$)[^#] * ))");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");*/
-    /*
-    std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
-    
-    std::regex rem("(?!\$)((.)+)(?=\#)");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
-        
-    std::regex rem("(?!\$)[a-zA-Z0-9](?=\#)");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
-    
-    std::regex rem("(?!\$).+(?=\#)");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
-
-    std::regex rem2("$\W+#");
-    tokenizedContent = std::regex_replace(tokenizedContent, rem2, "");	
-    
-    std::regex remSemiColon("[;]*");
-    tokenizedContent = std::regex_replace(tokenizedContent, remSemiColon, "");
-    std::regex remBrackets("[{]|[}]");
-    tokenizedContent = std::regex_replace(tokenizedContent, remBrackets, "");
-    std::regex rem("[']|[']");%
-    tokenizedContent = std::regex_replace(tokenizedContent, remBrackets, "");
-    */
 }
 void FilePlagiarism::kGramGeneration(const int k) {
     // kGram index
