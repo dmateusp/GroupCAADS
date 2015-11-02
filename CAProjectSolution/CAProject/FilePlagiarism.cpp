@@ -139,14 +139,14 @@ std::string FilePlagiarism::getCleanContent() const {
             content.end());
 
     // Tokenize
-    /*
+    /*	
     WE MAY NEED TO CHANGE THE WAY WE CALL THIS!!!
     */
 	std::string* contentPtr;
 	contentPtr = &content;
     tokenizeContent(contentPtr);
 	contentPtr = nullptr;
-    return content;
+	return content;
 }
 
 /*
@@ -168,23 +168,23 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	*/
 	// MAIN
 	std::regex mainFunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, mainFunc, "MAIN");
+	*contentPtr = std::regex_replace(*contentPtr, mainFunc, "#MAIN$");
 	
 	// BOOLFUNC
 	std::regex boolFunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, boolFunc, "BOOLFUNC");
+	*contentPtr = std::regex_replace(*contentPtr, boolFunc, "#BOOLFUNC$");
 
 	// CHARFUNC
 	std::regex charFunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, charFunc, "CHARFUNC");
+	*contentPtr = std::regex_replace(*contentPtr, charFunc, "#CHARFUNC$");
 	
 	// INTFUNC
 	std::regex intFunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, intFunc, "INTFUNC");
+	*contentPtr = std::regex_replace(*contentPtr, intFunc, "#INTFUNC$");
 
 	// FLOATFUNC
 	std::regex floFunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, floFunc, "FLOATFUNC");
+	*contentPtr = std::regex_replace(*contentPtr, floFunc, "#FLOATFUNC$");
 
 	/*
 	---
@@ -194,51 +194,47 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 
 	// IF
 	std::regex flowIf("if\\(");
-	*contentPtr = std::regex_replace(*contentPtr, flowIf, "IF");
+	*contentPtr = std::regex_replace(*contentPtr, flowIf, "#IF$");
 
 	// ELSE
 	std::regex flowElse("else");
-	*contentPtr = std::regex_replace(*contentPtr, flowElse, "ELSE");
+	*contentPtr = std::regex_replace(*contentPtr, flowElse, "#ELSE$");
 
 	// FOR LOOP
 	std::regex forLoop("for\\(");
-	*contentPtr = std::regex_replace(*contentPtr, forLoop, "FORLOOP");
+	*contentPtr = std::regex_replace(*contentPtr, forLoop, "#FORLOOP$");
 
 	// WHILE LOOP
 	std::regex whileLoop("while\\(");
-	*contentPtr = std::regex_replace(*contentPtr, whileLoop, "WHILELOOP");
+	*contentPtr = std::regex_replace(*contentPtr, whileLoop, "#WHILELOOP$");
 
 	// DO
 	std::regex flowDo("do\\{");
-	*contentPtr = std::regex_replace(*contentPtr, flowDo, "DO");
+	*contentPtr = std::regex_replace(*contentPtr, flowDo, "#DO$");
 
 	// BREAK
 	std::regex flowBreak("break\\;");
-	*contentPtr = std::regex_replace(*contentPtr, flowBreak, "BREAK");
+	*contentPtr = std::regex_replace(*contentPtr, flowBreak, "#BREAK$");
 
 	// CONTINUE
 	std::regex flowContinue("continue\\;");
-	*contentPtr = std::regex_replace(*contentPtr, flowContinue, "CONTINUE");
+	*contentPtr = std::regex_replace(*contentPtr, flowContinue, "#CONTINUE$");
 
 	// SWITCH
 	std::regex flowSwitch("switch\\([a-zA-Z0-9]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, flowSwitch, "SWITCH");
+	*contentPtr = std::regex_replace(*contentPtr, flowSwitch, "#SWITCH$");
 
 	// CASE
 	std::regex flowCase("case[a-zA-Z0-9]*\\:");
-	*contentPtr = std::regex_replace(*contentPtr, flowCase, "CASE");
-
-	/*
-	---
-	CLASS
-	---
-	*/
+	*contentPtr = std::regex_replace(*contentPtr, flowCase, "#CASE$");
 
 	/*
 	---
 	IO
 	---
 	*/
+
+	// No regex included. Does not affect logic.
 
 	/*
 	---
@@ -248,19 +244,19 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	
 	// VARBOOL
 	std::regex boole("bool");
-	*contentPtr = std::regex_replace(*contentPtr, boole, "VARBOOL");
+	*contentPtr = std::regex_replace(*contentPtr, boole, "#VARBOOL$");
 
 	// VARCHAR
 	std::regex varcha("signedchar|unsignedchar|char");
-	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
+	*contentPtr = std::regex_replace(*contentPtr, varcha, "#VARCHAR$");
 
 	// VARINT
 	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
+	*contentPtr = std::regex_replace(*contentPtr, varint, "#VARINT$");
 
 	// VARFLOAT
-	std::regex varflo("float|double|long double");
-	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
+	std::regex varflo("float|double|longdouble");
+	*contentPtr = std::regex_replace(*contentPtr, varflo, "#VARFLOAT$");
 
 	/*
 	---
@@ -271,41 +267,66 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 
 	// RELATIONAL OPERATORS	
 	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
-	*contentPtr = std::regex_replace(*contentPtr, relOp, "RELATIONALOP");
+	*contentPtr = std::regex_replace(*contentPtr, relOp, "#RELATIONALOP$");
 
 	// COMPOUND ASSIGNMENT	
 	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
-	*contentPtr = std::regex_replace(*contentPtr, compAs, "COMPOUNDASSIGN");
+	*contentPtr = std::regex_replace(*contentPtr, compAs, "#COMPOUNDASSIGN$");
 
 	// INCREMENT
 	std::regex increm("\\++");
-	*contentPtr = std::regex_replace(*contentPtr, increm, "INCREMENT");
+	*contentPtr = std::regex_replace(*contentPtr, increm, "#INCREMENT$");
 
 	// DECREMENT
 	std::regex decrem("\\--");
-	*contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
+	*contentPtr = std::regex_replace(*contentPtr, decrem, "#DECREMENT$");
 
 	// LOGICAL OPERATORS
 	std::regex logOp("[!]{1}|[&]{2}|[|]{2}"); // exactly 1 {1} or 2 {2} occurrences == ! OR && OR ||
-	*contentPtr = std::regex_replace(*contentPtr, logOp, "LOGICALOP");
+	*contentPtr = std::regex_replace(*contentPtr, logOp, "#LOGICALOP$");
 
 	// ARITHMETIC OPERATORS
 	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
-	*contentPtr = std::regex_replace(*contentPtr, ariOp, "ARITHMETICOP");
+	*contentPtr = std::regex_replace(*contentPtr, ariOp, "#ARITHMETICOP$");
 
 	// ASSIGN
 	std::regex assign("=");
-	*contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
+	*contentPtr = std::regex_replace(*contentPtr, assign, "#ASSIGN$");
 
 	// RETURN
 	std::regex ret("return");
-	*contentPtr = std::regex_replace(*contentPtr, ret, "RETURN");
+	*contentPtr = std::regex_replace(*contentPtr, ret, "#RETURN$");
 
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
 	/*
 	if (not list of regex)
 	remove
 	*/
+
+	/*
+	std::regex rem("(? !\\$).+(? = \\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+	
+	std::regex rem("(?!\$)((.)+)(?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+		
+	std::regex rem("(?!\$)[a-zA-Z0-9](?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+	
+	std::regex rem("(?!\$).+(?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+
+	std::regex rem2("$\W+#");
+	*contentPtr = std::regex_replace(*contentPtr, rem2, "");	
+	
+	std::regex remSemiColon("[;]*");
+	*contentPtr = std::regex_replace(*contentPtr, remSemiColon, "");
+	std::regex remBrackets("[{]|[}]");
+	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
+	std::regex rem("[']|[']");%
+	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
+	*/
+
 }
 
 std::string FilePlagiarism::getFileName() const {
