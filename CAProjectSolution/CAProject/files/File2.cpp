@@ -1,8 +1,16 @@
 //this file is the same as file 1
 //Some code
-int test2(){
+/*
+comment
+*/
+void main (){
+	
+}
+int test2(){ // comment in same line as code
 	return 1;
 }
+
+
 //test some differences
 //some test
 //some other line
@@ -10,3 +18,9 @@ int test2(){
 //line2
 //code
 //code
+//code
+//code
+//if (/* condition */)
+{
+	/* code */
+}
