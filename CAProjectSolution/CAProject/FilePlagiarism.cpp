@@ -298,13 +298,9 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	*contentPtr = std::regex_replace(*contentPtr, ret, "#RETURN$");
 
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
-	/*
-	if (not list of regex)
-	remove
-	*/
-
-	/*
-	std::regex rem("(? !\\$).+(? = \\#)");
+	
+	/*	
+	std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
 	*contentPtr = std::regex_replace(*contentPtr, rem, "");
 	
 	std::regex rem("(?!\$)((.)+)(?=\#)");
