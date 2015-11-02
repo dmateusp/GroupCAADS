@@ -154,111 +154,173 @@ std::string FilePlagiarism::getCleanContent() {
 TOKENIZE
 ------------------------------------------------------------------
 */
-void FilePlagiarism::tokenizeContent(std::string &content) {
+void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
+
+	// | behaves like an OR
+	// \\ ensures the literal character inmediately after is checked
+	// [a-zA-Z0-9&*] any alphanumerical character, & or *
+	// * any number of ocurrences
+
 	/*
 	---
 	FUNCTIONS
 	---
 	*/
-
 	// MAIN
-	/*
-	std::regex beginMain("intmain\\(*\\)\\{|voidmain\\(*\\)\\{");
-	// the | behaves like an OR
-	// the \\ ensures the literal character inmediately after is checked
-	// the * is wildcard
-	content = std::regex_replace(content, beginMain, "BEGINMAIN");
-	*/
+	std::regex mainFunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, mainFunc, "#MAIN$");
 
 	// BOOLFUNC
-	std::regex boolfunc("bool");
-	content = std::regex_replace(content, boolfunc, "#BEGINBOOLFUNC$");
+	std::regex boolFunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, boolFunc, "#BOOLFUNC$");
 
-	/*
 	// CHARFUNC
-	std::regex varcha("signedchar|unsignedchar|char");
-	content = std::regex_replace(content, varcha, "VARCHAR");
+	std::regex charFunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, charFunc, "#CHARFUNC$");
 
 	// INTFUNC
-	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	content = std::regex_replace(content, varint, "VARINT");
+	std::regex intFunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, intFunc, "#INTFUNC$");
 
 	// FLOATFUNC
-	std::regex varflo("float|double|long double");
-	content = std::regex_replace(content, varflo, "VARFLOAT");
-	*/
-
+	std::regex floFunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, floFunc, "#FLOATFUNC$");
 
 	/*
 	---
-	LOOPS
+	FLOW CONTROL
 	---
 	*/
+
+	// IF
+	std::regex flowIf("if\\(");
+	*contentPtr = std::regex_replace(*contentPtr, flowIf, "#IF$");
+
+	// ELSE
+	std::regex flowElse("else");
+	*contentPtr = std::regex_replace(*contentPtr, flowElse, "#ELSE$");
+
+	// FOR LOOP
+	std::regex forLoop("for\\(");
+	*contentPtr = std::regex_replace(*contentPtr, forLoop, "#FORLOOP$");
+
+	// WHILE LOOP
+	std::regex whileLoop("while\\(");
+	*contentPtr = std::regex_replace(*contentPtr, whileLoop, "#WHILELOOP$");
+
+	// DO
+	std::regex flowDo("do\\{");
+	*contentPtr = std::regex_replace(*contentPtr, flowDo, "#DO$");
+
+	// BREAK
+	std::regex flowBreak("break\\;");
+	*contentPtr = std::regex_replace(*contentPtr, flowBreak, "#BREAK$");
+
+	// CONTINUE
+	std::regex flowContinue("continue\\;");
+	*contentPtr = std::regex_replace(*contentPtr, flowContinue, "#CONTINUE$");
+
+	// SWITCH
+	std::regex flowSwitch("switch\\([a-zA-Z0-9]*\\)\\{");
+	*contentPtr = std::regex_replace(*contentPtr, flowSwitch, "#SWITCH$");
+
+	// CASE
+	std::regex flowCase("case[a-zA-Z0-9]*\\:");
+	*contentPtr = std::regex_replace(*contentPtr, flowCase, "#CASE$");
+
+	/*
+	---
+	IO
+	---
+	*/
+
+	// No regex included. Does not affect logic.
 
 	/*
 	---
 	VARIABLES
 	---
 	*/
-	/*
+	
 	// VARBOOL
 	std::regex boole("bool");
-	content = std::regex_replace(content, boole, "VARBOOL");
-	*/
+	*contentPtr = std::regex_replace(*contentPtr, boole, "#VARBOOL$");
+
 	// VARCHAR
 	std::regex varcha("signedchar|unsignedchar|char");
-	content = std::regex_replace(content, varcha, "#VARCHAR$");
+	*contentPtr = std::regex_replace(*contentPtr, varcha, "#VARCHAR$");
 
 	// VARINT
 	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	content = std::regex_replace(content, varint, "#VARINT$");
+	*contentPtr = std::regex_replace(*contentPtr, varint, "#VARINT$");
 
 	// VARFLOAT
-	std::regex varflo("float|double|long double");
-	content = std::regex_replace(content, varflo, "#VARFLOAT$");
+	std::regex varflo("float|double|longdouble");
+	*contentPtr = std::regex_replace(*contentPtr, varflo, "#VARFLOAT$");
 
 	/*
 	---
 	OPERATORS
 	---
 	*/
-	// Keep loose or strict token set?
 	// From more to less complex as first match is chosen
 
 	// RELATIONAL OPERATORS	
 	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
-	content = std::regex_replace(content, relOp, "#RELATIONALOP$");
+	*contentPtr = std::regex_replace(*contentPtr, relOp, "#RELATIONALOP$");
 
 	// COMPOUND ASSIGNMENT	
 	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
-	content = std::regex_replace(content, compAs, "#COMPOUNDASSIGN$");
+	*contentPtr = std::regex_replace(*contentPtr, compAs, "#COMPOUNDASSIGN$");
 
 	// INCREMENT
 	std::regex increm("\\++");
-	content = std::regex_replace(content, increm, "#INCREMENT$");
+	*contentPtr = std::regex_replace(*contentPtr, increm, "#INCREMENT$");
 
 	// DECREMENT
 	std::regex decrem("\\--");
-	content = std::regex_replace(content, decrem, "#DECREMENT$");
+	*contentPtr = std::regex_replace(*contentPtr, decrem, "#DECREMENT$");
 
 	// LOGICAL OPERATORS
-	/*
-	std::regex log("\\!|\\&&|\\||");
-	content = std::regex_replace(content, log, "LOGICALOP");
-	*/
+	std::regex logOp("[!]{1}|[&]{2}|[|]{2}"); // exactly 1 {1} or 2 {2} occurrences == ! OR && OR ||
+	*contentPtr = std::regex_replace(*contentPtr, logOp, "#LOGICALOP$");
 
 	// ARITHMETIC OPERATORS
 	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
-	content = std::regex_replace(content, ariOp, "#ARITHMETICOP$");
+	*contentPtr = std::regex_replace(*contentPtr, ariOp, "#ARITHMETICOP$");
 
 	// ASSIGN
 	std::regex assign("=");
-	content = std::regex_replace(content, assign, "#ASSIGN$");
+	*contentPtr = std::regex_replace(*contentPtr, assign, "#ASSIGN$");
+
+	// RETURN
+	std::regex ret("return");
+	*contentPtr = std::regex_replace(*contentPtr, ret, "#RETURN$");
 
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
+	
 	/*
-	if (not list of regex)
-	remove
+	std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+	
+	std::regex rem("(?!\$)((.)+)(?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+		
+	std::regex rem("(?!\$)[a-zA-Z0-9](?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+	
+	std::regex rem("(?!\$).+(?=\#)");
+	*contentPtr = std::regex_replace(*contentPtr, rem, "");
+
+	std::regex rem2("$\W+#");
+	*contentPtr = std::regex_replace(*contentPtr, rem2, "");	
+	
+	std::regex remSemiColon("[;]*");
+	*contentPtr = std::regex_replace(*contentPtr, remSemiColon, "");
+	std::regex remBrackets("[{]|[}]");
+	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
+	std::regex rem("[']|[']");%
+	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
 	*/
 	kGramGeneration(content,2);
 }
