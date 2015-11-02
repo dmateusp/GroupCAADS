@@ -12,7 +12,8 @@ FilePlagiarism::FilePlagiarism()
 {}
 FilePlagiarism::FilePlagiarism(std::string flName,
                                 int tp,
-                                std::string pathToDir)
+                                std::string pathToDir,
+                                int kgram)
     : fileName(flName) ,
     type(tp),
     pathToFile(pathToDir + '/' + flName),
@@ -21,8 +22,8 @@ FilePlagiarism::FilePlagiarism(std::string flName,
 {
     arrayPlagiarism = new std::string[ARRAYSIZE];
     getCleanContent();
-	tokenizeContent();
-	kGramGeneration(3);
+    tokenizeContent();
+    kGramGeneration(kgram);
 }
 FilePlagiarism::~FilePlagiarism()
 {}
@@ -138,6 +139,17 @@ TOKENIZE
 ------------------------------------------------------------------
 */
 void FilePlagiarism::tokenizeContent() {
+    /*
+    ---
+    INCLUDES
+    ---
+    */
+    std::regex includes("#include[\"<].*[\">]");
+    tokenizedContent = std::regex_replace(tokenizedContent, includes, "#INCLUDE$");
+
+    std::regex pragmaonce("#pragmaonce");
+    tokenizedContent = std::regex_replace(tokenizedContent, pragmaonce, "#PRAGMAONCE$");
+    
     /*
     ---
     FUNCTIONS
@@ -271,7 +283,9 @@ void FilePlagiarism::tokenizeContent() {
     std::regex assign("=");
     tokenizedContent = std::regex_replace(tokenizedContent, assign, "#ASSIGN$");
 
-    // BEFORE RETURNING tokenizedContent REMOVE ANYTHING THAT IS not a regex
+    // REMOVE ANYTHING THAT IS not a token
+    /*std::regex rem("(? <= \$)[^#] * ))");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");*/
     /*
     std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
     tokenizedContent = std::regex_replace(tokenizedContent, rem, "");

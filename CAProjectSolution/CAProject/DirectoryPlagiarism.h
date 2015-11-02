@@ -22,11 +22,12 @@ class DirectoryPlagiarism {
     FilePlagiarism *head;
     // Adds a file
     void addFile(FilePlagiarism* filePtr);
+	int kgram;
 
  public:
     DirectoryPlagiarism();
     // The object created behaves as a list of files
-    explicit DirectoryPlagiarism(std::string dirName);
+    DirectoryPlagiarism(std::string dirName, int kgram = 2);
     /****************************************
     * The destructor cleans up the memory
     * by deleting the pointers for each node

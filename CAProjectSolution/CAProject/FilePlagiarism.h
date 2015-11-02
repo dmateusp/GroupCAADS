@@ -44,7 +44,7 @@ class FilePlagiarism {
 
  public:
     FilePlagiarism();
-    FilePlagiarism(std::string flName, int tp, std::string pathToDir);
+    FilePlagiarism(std::string flName, int tp, std::string pathToDir, int kgram);
     /****************************************************
     * Actually the DirectoryPlagiarism acts like a list
     * and destructs all the nodes (FilePlagiarism)

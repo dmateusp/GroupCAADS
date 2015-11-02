@@ -22,8 +22,11 @@ DirectoryPlagiarism::~DirectoryPlagiarism() {
 }
 DirectoryPlagiarism::DirectoryPlagiarism()
 {}
-DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
-    : directoryName(dirName) {
+DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName, int kgr)
+    : directoryName(dirName),
+	kgram(kgr){
+	if (kgram < 2)
+		kgram = 2;
     head = new FilePlagiarism;
     // We need a pointer to the directory
     DIR *dirPtr = NULL;
@@ -47,7 +50,8 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
                 *filePtr = FilePlagiarism(
                                 pent->d_name,
                                 pent->d_type,
-                                directoryName);
+                                directoryName,
+								kgram);
                 addFile(filePtr);
                 filePtr = nullptr;
             }
