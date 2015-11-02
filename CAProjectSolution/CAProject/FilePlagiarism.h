@@ -28,15 +28,20 @@ class FilePlagiarism {
     // plagiarism %
     double plagiarism;
     FilePlagiarism* next;
+	int static const ARRAYSIZE = 100;
+	std::string *arrayPlagiarism;
+	int arrayUse;
     // Reads the file and saves the content in the content member
     std::string getContent() const;
     /**********************************************
 	* Reads the file, saves the content in content,
 	* then cleans it removing whitespace
 	**********************************************/
-    std::string getCleanContent() const;
+    std::string getCleanContent();
 	// tokenize content
-	void tokenizeContent(std::string *ptrContent) const;	
+	void tokenizeContent(std::string &content);
+	// k-gram generation
+	void kGramGeneration(std::string &content, int k);
     // Gets the percentage of same lines in two files
     double percentageSameLines(FilePlagiarism* otherFile);
 

@@ -114,11 +114,14 @@ std::ostream &operator<<(std::ostream &output,
         std::ostringstream stringStream;
         stringStream << filePtr->plagiarism;
         std::string plagiarismToString = stringStream.str();
-        output << "- File : "
-            << filePtr->fileName
-            << "| Plagiarism (0 for original, 1 for plagiarized) : "
-            << plagiarismToString
-            << std::endl;
+		output << "- File : "
+			<< filePtr->fileName
+			<< std::endl;
+		for (int i = 0; i < filePtr->ARRAYSIZE && filePtr->arrayPlagiarism[i] != ""; i++) {
+			output << filePtr->arrayPlagiarism[i];
+			output << std::endl;
+		}
+        output << std::endl;
     }
     output << "--------------------------------------" << std::endl;
     output << "Plagiarism detector using a : " << std::endl;

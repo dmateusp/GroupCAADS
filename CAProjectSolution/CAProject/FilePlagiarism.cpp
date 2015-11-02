@@ -16,10 +16,13 @@ FilePlagiarism::FilePlagiarism(std::string flName,
     : fileName(flName) ,
     type(tp),
     pathToFile(pathToDir + '/' + flName),
-    content(getCleanContent()),
     plagiarism(0),
-    next(nullptr)
-{}
+    next(nullptr),
+	arrayUse(0)
+{
+	arrayPlagiarism = new std::string[ARRAYSIZE];
+	content = getCleanContent();
+}
 FilePlagiarism::~FilePlagiarism()
 {}
 std::string FilePlagiarism::getContent() const {
@@ -32,9 +35,9 @@ std::string FilePlagiarism::getContent() const {
     read.close();
     return content;
 }
-
+const int FilePlagiarism::ARRAYSIZE;
 // LMD
-std::string FilePlagiarism::getCleanContent() const {
+std::string FilePlagiarism::getCleanContent() {
     std::ifstream read(pathToFile);
     std::string line;
     std::string content;
@@ -142,10 +145,7 @@ std::string FilePlagiarism::getCleanContent() const {
     /*
     WE MAY NEED TO CHANGE THE WAY WE CALL THIS!!!
     */
-	std::string* contentPtr;
-	contentPtr = &content;
-    tokenizeContent(contentPtr);
-	contentPtr = nullptr;
+    tokenizeContent(content);
     return content;
 }
 
@@ -154,8 +154,7 @@ std::string FilePlagiarism::getCleanContent() const {
 TOKENIZE
 ------------------------------------------------------------------
 */
-void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
-
+void FilePlagiarism::tokenizeContent(std::string &content) {
 	/*
 	---
 	FUNCTIONS
@@ -168,27 +167,25 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	// the | behaves like an OR
 	// the \\ ensures the literal character inmediately after is checked
 	// the * is wildcard
-	*contentPtr = std::regex_replace(*contentPtr, beginMain, "BEGINMAIN");
+	content = std::regex_replace(content, beginMain, "BEGINMAIN");
 	*/
 
 	// BOOLFUNC
-
 	std::regex boolfunc("bool");
-	*contentPtr = std::regex_replace(*contentPtr, boolfunc, "BEGINBOOLFUNC");
-
+	content = std::regex_replace(content, boolfunc, "#BEGINBOOLFUNC$");
 
 	/*
 	// CHARFUNC
 	std::regex varcha("signedchar|unsignedchar|char");
-	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
+	content = std::regex_replace(content, varcha, "VARCHAR");
 
 	// INTFUNC
 	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
+	content = std::regex_replace(content, varint, "VARINT");
 
 	// FLOATFUNC
 	std::regex varflo("float|double|long double");
-	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
+	content = std::regex_replace(content, varflo, "VARFLOAT");
 	*/
 
 
@@ -206,19 +203,19 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 	/*
 	// VARBOOL
 	std::regex boole("bool");
-	*contentPtr = std::regex_replace(*contentPtr, boole, "VARBOOL");
+	content = std::regex_replace(content, boole, "VARBOOL");
 	*/
 	// VARCHAR
 	std::regex varcha("signedchar|unsignedchar|char");
-	*contentPtr = std::regex_replace(*contentPtr, varcha, "VARCHAR");
+	content = std::regex_replace(content, varcha, "#VARCHAR$");
 
 	// VARINT
 	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	*contentPtr = std::regex_replace(*contentPtr, varint, "VARINT");
+	content = std::regex_replace(content, varint, "#VARINT$");
 
 	// VARFLOAT
 	std::regex varflo("float|double|long double");
-	*contentPtr = std::regex_replace(*contentPtr, varflo, "VARFLOAT");
+	content = std::regex_replace(content, varflo, "#VARFLOAT$");
 
 	/*
 	---
@@ -230,41 +227,79 @@ void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
 
 	// RELATIONAL OPERATORS	
 	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
-	*contentPtr = std::regex_replace(*contentPtr, relOp, "RELATIONALOP");
+	content = std::regex_replace(content, relOp, "#RELATIONALOP$");
 
 	// COMPOUND ASSIGNMENT	
 	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
-	*contentPtr = std::regex_replace(*contentPtr, compAs, "COMPOUNDASSIGN");
+	content = std::regex_replace(content, compAs, "#COMPOUNDASSIGN$");
 
 	// INCREMENT
 	std::regex increm("\\++");
-	*contentPtr = std::regex_replace(*contentPtr, increm, "INCREMENT");
+	content = std::regex_replace(content, increm, "#INCREMENT$");
 
 	// DECREMENT
 	std::regex decrem("\\--");
-	*contentPtr = std::regex_replace(*contentPtr, decrem, "DECREMENT");
+	content = std::regex_replace(content, decrem, "#DECREMENT$");
 
 	// LOGICAL OPERATORS
 	/*
 	std::regex log("\\!|\\&&|\\||");
-	*contentPtr = std::regex_replace(*contentPtr, log, "LOGICALOP");
+	content = std::regex_replace(content, log, "LOGICALOP");
 	*/
 
 	// ARITHMETIC OPERATORS
 	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
-	*contentPtr = std::regex_replace(*contentPtr, ariOp, "ARITHMETICOP");
+	content = std::regex_replace(content, ariOp, "#ARITHMETICOP$");
 
 	// ASSIGN
 	std::regex assign("=");
-	*contentPtr = std::regex_replace(*contentPtr, assign, "ASSIGN");
+	content = std::regex_replace(content, assign, "#ASSIGN$");
 
 	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
 	/*
 	if (not list of regex)
 	remove
 	*/
+	kGramGeneration(content,2);
 }
-
+void FilePlagiarism::kGramGeneration(std::string &content, const int k) {
+	// kGram index
+	int kGramIndex = 0;
+	// number of tokens found
+	int t = 0;
+	// index of first token of this sequence
+	int nextSequence = 0;
+	for (int j = content.find("#"); j < content.length(); j = content.find("#",j+1)) {
+		if (t == k) {
+			kGramIndex++;
+			j = nextSequence;
+			t = 0;
+		}
+		else {
+			arrayPlagiarism[kGramIndex] = arrayPlagiarism[kGramIndex] + content.substr(j + 1, (content.find('$', j) - j) - 1);
+			if (t) {
+				nextSequence = j;
+			}
+			t++;
+		}
+	}
+	arrayUse = kGramIndex;
+	for (int i = 0; arrayPlagiarism[i] != ""; i++) {
+		// Counter for number of times a kGram occurs
+		int n = 1;
+		for (int j = 0; arrayPlagiarism[j] != ""; j++) {
+			if (j != i) {
+				if (!arrayPlagiarism[i].compare(arrayPlagiarism[j])) {
+					arrayPlagiarism[j] = arrayPlagiarism[arrayUse];
+					arrayPlagiarism[arrayUse] = "";
+					arrayUse--;
+					n++;
+				}
+			}
+		}
+		arrayPlagiarism[i] += " : " + std::to_string(n);
+	}
+}
 std::string FilePlagiarism::getFileName() const {
     return fileName;
 }
