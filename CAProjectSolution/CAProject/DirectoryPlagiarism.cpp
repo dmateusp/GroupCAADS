@@ -8,13 +8,14 @@
 DirectoryPlagiarism::~DirectoryPlagiarism() {
     FilePlagiarism *filePtr;
     /******************************************************
-	* Since we delete the first pointer we loose the ->next, 
-	* so we need to keep track
-	* of the next pointer by using a second pointer
+    * Since we delete the first pointer we loose the ->next, 
+    * so we need to keep track
+    * of the next pointer by using a second pointer
     ******************************************************/ 
     FilePlagiarism *nextFilePtr;
     for (filePtr = head; filePtr; filePtr = nextFilePtr) {
         nextFilePtr = filePtr->next;
+        delete[] filePtr->arrayPlagiarism;
         delete filePtr;
     }
     filePtr, nextFilePtr = nullptr;
@@ -52,7 +53,6 @@ DirectoryPlagiarism::DirectoryPlagiarism(std::string dirName)
             }
         }
     }
-    calculatePlagiarism();
 }
 FilePlagiarism * DirectoryPlagiarism::getFileAt(int index) {
     int i = 0;
@@ -70,32 +70,6 @@ void DirectoryPlagiarism::addFile(FilePlagiarism* fPtr) {
     else
         filePtr->next = fPtr;
 }
-void DirectoryPlagiarism::calculatePlagiarism() {
-    int plagiarismIndexesCounter = 0;
-    // The first pointer we'll use to grab a file
-    FilePlagiarism* firstFilePtr;
-    // The second pointer we'll use to compare the first file to another
-    FilePlagiarism* secondFilePtr;
-    // Takes a file
-    for (firstFilePtr = head; firstFilePtr; firstFilePtr = firstFilePtr->next) {
-        firstFilePtr->plagiarism = 0;
-        // Takes all the other files
-        for (
-            secondFilePtr = head;
-            secondFilePtr;
-            secondFilePtr = secondFilePtr->next) {
-            // Test if the file compared is not itself
-            if (firstFilePtr != secondFilePtr) {
-                // First function
-                firstFilePtr->plagiarism +=
-                    firstFilePtr->percentageSameLines(secondFilePtr);
-                plagiarismIndexesCounter++;
-            }
-        }
-        // TODO(anyone) we should do some average here
-    }
-    firstFilePtr, secondFilePtr = nullptr;
-}
 const std::string DirectoryPlagiarism::getDirectoryName() const {
     return directoryName;
 }
@@ -106,25 +80,21 @@ std::ostream &operator<<(std::ostream &output,
     output << "- Files in directory : " << std::endl;
     FilePlagiarism *filePtr;
     for (filePtr = Dir.head; filePtr; filePtr = filePtr->next) {
-        /****************************************
-        * This answer helped me figuring
-        * out how to convert a double to string :
-        * http://stackoverflow.com/a/332132
-        ****************************************/
-        std::ostringstream stringStream;
-        stringStream << filePtr->plagiarism;
-        std::string plagiarismToString = stringStream.str();
-		output << "- File : "
-			<< filePtr->fileName
-			<< std::endl;
-		for (int i = 0; i < filePtr->ARRAYSIZE && filePtr->arrayPlagiarism[i] != ""; i++) {
-			output << filePtr->arrayPlagiarism[i];
-			output << std::endl;
-		}
+        output << "- File : "
+            << filePtr->fileName
+            << std::endl;
+        for (int i = 0; i <= filePtr->arrayUse; i++) {
+            output << filePtr->arrayPlagiarism[i];
+            output << std::endl;
+        }
         output << std::endl;
     }
     output << "--------------------------------------" << std::endl;
-    output << "Plagiarism detector using a : " << std::endl;
-    output << "- Same line detector " << std::endl;
+    output << "How the plagiarism detector works : " << std::endl;
+    output << "- Gets the raw content from the file" << std::endl;
+    output << "- Cleans the content" << std::endl;
+    output << "- Tokenizes the content" << std::endl;
+    output << "- Divides the content into k-Grams" << std::endl;
+    output << "- Counts the occurences for each k-Gram" << std::endl;
     return output;
 }

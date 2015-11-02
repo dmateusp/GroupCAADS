@@ -22,24 +22,22 @@ class DirectoryPlagiarism {
     FilePlagiarism *head;
     // Adds a file
     void addFile(FilePlagiarism* filePtr);
-    // Calculates the average plagiarism for every file
-    void calculatePlagiarism();
 
  public:
     DirectoryPlagiarism();
     // The object created behaves as a list of files
     explicit DirectoryPlagiarism(std::string dirName);
     /****************************************
-	* The destructor cleans up the memory
-	* by deleting the pointers for each node
-	****************************************/
+    * The destructor cleans up the memory
+    * by deleting the pointers for each node
+    ****************************************/
     virtual ~DirectoryPlagiarism();
     // Returns the directory name
     const std::string getDirectoryName() const;
     /**************************************************
-	* Returns a pointer to the file at the given index,
-	* if the index is outofbounds: returns a nullptr
-	**************************************************/
+    * Returns a pointer to the file at the given index,
+    * if the index is outofbounds: returns a nullptr
+    **************************************************/
     FilePlagiarism* getFileAt(int index);
 };
 #endif  // CAPROJECTSOLUTION_CAPROJECT_DIRECTORYPLAGIARISM_H_

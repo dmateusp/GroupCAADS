@@ -19,31 +19,28 @@ class FilePlagiarism {
  private:
     std::string fileName = "";
     std::string pathToFile;
-    std::string content;
+    std::string tokenizedContent;
     /***************************************************************
     * Could not get rid of the '..' and '.' files so we created this
     * discriminating type variable to differentiate them
     ****************************************************************/
     int type = 0;
-    // plagiarism %
-    double plagiarism;
+    // Pointed to the next file
     FilePlagiarism* next;
-	int static const ARRAYSIZE = 100;
-	std::string *arrayPlagiarism;
-	int arrayUse;
-    // Reads the file and saves the content in the content member
-    std::string getContent() const;
+    // Max size of the array of k-Grams
+    static int const ARRAYSIZE = 100;
+    // Array of k-Grams
+    std::string *arrayPlagiarism;
+    int arrayUse;
     /**********************************************
-	* Reads the file, saves the content in content,
-	* then cleans it removing whitespace
-	**********************************************/
-    std::string getCleanContent();
-	// tokenize content
-	void tokenizeContent(std::string &content);
-	// k-gram generation
-	void kGramGeneration(std::string &content, int k);
-    // Gets the percentage of same lines in two files
-    double percentageSameLines(FilePlagiarism* otherFile);
+    * Reads the file, saves the content in content,
+    * then cleans it removing whitespace
+    **********************************************/
+    void getCleanContent();
+    // tokenize content
+    void tokenizeContent();
+    // k-gram generation
+    void kGramGeneration(int k);
 
  public:
     FilePlagiarism();
@@ -55,7 +52,5 @@ class FilePlagiarism {
     virtual ~FilePlagiarism();
     // returns the file name
     std::string getFileName() const;
-    // returns the plagiarism index (between 0 and 1)
-    double getPlagiarism() const;
 };
 #endif  // CAPROJECTSOLUTION_CAPROJECT_FILEPLAGIARISM_H_

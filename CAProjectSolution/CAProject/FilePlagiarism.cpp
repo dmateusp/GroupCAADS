@@ -16,31 +16,21 @@ FilePlagiarism::FilePlagiarism(std::string flName,
     : fileName(flName) ,
     type(tp),
     pathToFile(pathToDir + '/' + flName),
-    plagiarism(0),
     next(nullptr),
-	arrayUse(0)
+    arrayUse(0)
 {
-	arrayPlagiarism = new std::string[ARRAYSIZE];
-	content = getCleanContent();
+    arrayPlagiarism = new std::string[ARRAYSIZE];
+    getCleanContent();
+	tokenizeContent();
+	kGramGeneration(3);
 }
 FilePlagiarism::~FilePlagiarism()
 {}
-std::string FilePlagiarism::getContent() const {
-    std::ifstream read(pathToFile);
-    std::string line;
-    std::string content;
-    while (std::getline(read, line)) {
-        content += line;
-    }
-    read.close();
-    return content;
-}
 const int FilePlagiarism::ARRAYSIZE;
 // LMD
-std::string FilePlagiarism::getCleanContent() {
+void FilePlagiarism::getCleanContent() {
     std::ifstream read(pathToFile);
     std::string line;
-    std::string content;
     bool isComment = false;
     int posComment = 0;
     int posCommentEnd = 0;
@@ -69,7 +59,7 @@ std::string FilePlagiarism::getCleanContent() {
             )
             && !isComment) {
             line = line.substr(0, posComment);
-            content += line;
+            tokenizedContent += line;
         }
         /*
         For multi line comments
@@ -95,7 +85,7 @@ std::string FilePlagiarism::getCleanContent() {
             // code before comment
             else {
                 line = line.substr(0, posComment);
-                content += line;
+                tokenizedContent += line;
                 isComment = true;
             }
         }
@@ -109,7 +99,7 @@ std::string FilePlagiarism::getCleanContent() {
                     && isComment) {
             // from the position after the end comment indicator
             line = line.substr(posComment+2);
-            content += line;
+            tokenizedContent += line;
             isComment = false;
         }
         /*
@@ -117,7 +107,7 @@ std::string FilePlagiarism::getCleanContent() {
         the line to keep will be the entire line
         */
         else if (!isComment) {
-            content += line;
+            tokenizedContent += line;
             isComment = false;
         }
         /*
@@ -134,19 +124,12 @@ std::string FilePlagiarism::getCleanContent() {
     ---
     */
 
-    content.erase(
+    tokenizedContent.erase(
         std::remove_if(
-            content.begin(),
-            content.end(),
+            tokenizedContent.begin(),
+            tokenizedContent.end(),
             isspace),
-            content.end());
-
-    // Tokenize
-    /*
-    WE MAY NEED TO CHANGE THE WAY WE CALL THIS!!!
-    */
-    tokenizeContent(content);
-    return content;
+            tokenizedContent.end());
 }
 
 /*
@@ -154,230 +137,218 @@ std::string FilePlagiarism::getCleanContent() {
 TOKENIZE
 ------------------------------------------------------------------
 */
-void FilePlagiarism::tokenizeContent(std::string * contentPtr) const {
+void FilePlagiarism::tokenizeContent() {
+    /*
+    ---
+    FUNCTIONS
+    ---
+    */
+    // MAIN
+    std::regex mainFunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, mainFunc, "#MAIN$");
 
-	// | behaves like an OR
-	// \\ ensures the literal character inmediately after is checked
-	// [a-zA-Z0-9&*] any alphanumerical character, & or *
-	// * any number of ocurrences
+    // BOOLFUNC
+    std::regex boolFunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, boolFunc, "#BOOLFUNC$");
 
-	/*
-	---
-	FUNCTIONS
-	---
-	*/
-	// MAIN
-	std::regex mainFunc("intmain\\([a-zA-Z0-9&*]*\\)\\{|voidmain\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, mainFunc, "#MAIN$");
+    // CHARFUNC
+    std::regex charFunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, charFunc, "#CHARFUNC$");
 
-	// BOOLFUNC
-	std::regex boolFunc("bool[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, boolFunc, "#BOOLFUNC$");
+    // INTFUNC
+    std::regex intFunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, intFunc, "#INTFUNC$");
 
-	// CHARFUNC
-	std::regex charFunc("signedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedchar[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|char[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, charFunc, "#CHARFUNC$");
+    // FLOATFUNC
+    std::regex floFunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, floFunc, "#FLOATFUNC$");
 
-	// INTFUNC
-	std::regex intFunc("shortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedshortint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|int[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|longlongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|signedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|unsignedlonglongint[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, intFunc, "#INTFUNC$");
+    /*
+    ---
+    FLOW CONTROL
+    ---
+    */
 
-	// FLOATFUNC
-	std::regex floFunc("float[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{|long double[a-zA-Z0-9&*]*\\([a-zA-Z0-9&*]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, floFunc, "#FLOATFUNC$");
+    // IF
+    std::regex flowIf("if\\(");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowIf, "#IF$");
 
-	/*
-	---
-	FLOW CONTROL
-	---
-	*/
+    // ELSE
+    std::regex flowElse("else");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowElse, "#ELSE$");
 
-	// IF
-	std::regex flowIf("if\\(");
-	*contentPtr = std::regex_replace(*contentPtr, flowIf, "#IF$");
+    // FOR LOOP
+    std::regex forLoop("for\\(");
+    tokenizedContent = std::regex_replace(tokenizedContent, forLoop, "#FORLOOP$");
 
-	// ELSE
-	std::regex flowElse("else");
-	*contentPtr = std::regex_replace(*contentPtr, flowElse, "#ELSE$");
+    // WHILE LOOP
+    std::regex whileLoop("while\\(");
+    tokenizedContent = std::regex_replace(tokenizedContent, whileLoop, "#WHILELOOP$");
 
-	// FOR LOOP
-	std::regex forLoop("for\\(");
-	*contentPtr = std::regex_replace(*contentPtr, forLoop, "#FORLOOP$");
+    // DO
+    std::regex flowDo("do\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowDo, "#DO$");
 
-	// WHILE LOOP
-	std::regex whileLoop("while\\(");
-	*contentPtr = std::regex_replace(*contentPtr, whileLoop, "#WHILELOOP$");
+    // BREAK
+    std::regex flowBreak("break\\;");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowBreak, "#BREAK$");
 
-	// DO
-	std::regex flowDo("do\\{");
-	*contentPtr = std::regex_replace(*contentPtr, flowDo, "#DO$");
+    // CONTINUE
+    std::regex flowContinue("continue\\;");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowContinue, "#CONTINUE$");
 
-	// BREAK
-	std::regex flowBreak("break\\;");
-	*contentPtr = std::regex_replace(*contentPtr, flowBreak, "#BREAK$");
+    // SWITCH
+    std::regex flowSwitch("switch\\([a-zA-Z0-9]*\\)\\{");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowSwitch, "#SWITCH$");
 
-	// CONTINUE
-	std::regex flowContinue("continue\\;");
-	*contentPtr = std::regex_replace(*contentPtr, flowContinue, "#CONTINUE$");
+    // CASE
+    std::regex flowCase("case[a-zA-Z0-9]*\\:");
+    tokenizedContent = std::regex_replace(tokenizedContent, flowCase, "#CASE$");
 
-	// SWITCH
-	std::regex flowSwitch("switch\\([a-zA-Z0-9]*\\)\\{");
-	*contentPtr = std::regex_replace(*contentPtr, flowSwitch, "#SWITCH$");
+    /*
+    ---
+    IO
+    ---
+    */
 
-	// CASE
-	std::regex flowCase("case[a-zA-Z0-9]*\\:");
-	*contentPtr = std::regex_replace(*contentPtr, flowCase, "#CASE$");
+    // No regex included. Does not affect logic.
 
-	/*
-	---
-	IO
-	---
-	*/
+    /*
+    ---
+    VARIABLES
+    ---
+    */    
+    // VARBOOL
+    std::regex boole("bool");
+    tokenizedContent = std::regex_replace(tokenizedContent, boole, "#VARBOOL$");
 
-	// No regex included. Does not affect logic.
+    // VARCHAR
+    std::regex varcha("signedchar|unsignedchar|char");
+    tokenizedContent = std::regex_replace(tokenizedContent, varcha, "#VARCHAR$");
 
-	/*
-	---
-	VARIABLES
-	---
-	*/
-	
-	// VARBOOL
-	std::regex boole("bool");
-	*contentPtr = std::regex_replace(*contentPtr, boole, "#VARBOOL$");
+    // VARINT
+    std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
+    tokenizedContent = std::regex_replace(tokenizedContent, varint, "#VARINT$");
 
-	// VARCHAR
-	std::regex varcha("signedchar|unsignedchar|char");
-	*contentPtr = std::regex_replace(*contentPtr, varcha, "#VARCHAR$");
+    // VARFLOAT
+    std::regex varflo("float|double|longdouble");
+    tokenizedContent = std::regex_replace(tokenizedContent, varflo, "#VARFLOAT$");
 
-	// VARINT
-	std::regex varint("shortint|signedshortint|unsignedshortint|int|signedint|unsignedint|longint|signedlongint|unsignedlongint|longlongint|signedlonglongint|unsignedlonglongint");
-	*contentPtr = std::regex_replace(*contentPtr, varint, "#VARINT$");
+    /*
+    ---
+    OPERATORS
+    ---
+    */
+    // From more to less complex as first match is chosen
 
-	// VARFLOAT
-	std::regex varflo("float|double|longdouble");
-	*contentPtr = std::regex_replace(*contentPtr, varflo, "#VARFLOAT$");
+    // RELATIONAL OPERATORS
+    std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
+    tokenizedContent = std::regex_replace(tokenizedContent, relOp, "#RELATIONALOP$");
 
-	/*
-	---
-	OPERATORS
-	---
-	*/
-	// From more to less complex as first match is chosen
+    // COMPOUND ASSIGNMENT
+    std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
+    tokenizedContent = std::regex_replace(tokenizedContent, compAs, "#COMPOUNDASSIGN$");
 
-	// RELATIONAL OPERATORS	
-	std::regex relOp("\\==|\\!=|\\>=|\\<=|\\<|\\>");
-	*contentPtr = std::regex_replace(*contentPtr, relOp, "#RELATIONALOP$");
+    // INCREMENT
+    std::regex increm("\\++");
+    tokenizedContent = std::regex_replace(tokenizedContent, increm, "#INCREMENT$");
 
-	// COMPOUND ASSIGNMENT	
-	std::regex compAs("\\+=|\\-=|\\*=|\\/=|\\%=|\\>>=|\\<<=|\\&=");
-	*contentPtr = std::regex_replace(*contentPtr, compAs, "#COMPOUNDASSIGN$");
+    // DECREMENT
+    std::regex decrem("\\--");
+    tokenizedContent = std::regex_replace(tokenizedContent, decrem, "#DECREMENT$");
 
-	// INCREMENT
-	std::regex increm("\\++");
-	*contentPtr = std::regex_replace(*contentPtr, increm, "#INCREMENT$");
+    // LOGICAL OPERATORS
+    /*
+    std::regex log("\\!|\\&&|\\||");
+    tokenizedContent = std::regex_replace(tokenizedContent, log, "LOGICALOP");
+    */
 
-	// DECREMENT
-	std::regex decrem("\\--");
-	*contentPtr = std::regex_replace(*contentPtr, decrem, "#DECREMENT$");
+    // ARITHMETIC OPERATORS
+    std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
+    tokenizedContent = std::regex_replace(tokenizedContent, ariOp, "#ARITHMETICOP$");
 
-	// LOGICAL OPERATORS
-	std::regex logOp("[!]{1}|[&]{2}|[|]{2}"); // exactly 1 {1} or 2 {2} occurrences == ! OR && OR ||
-	*contentPtr = std::regex_replace(*contentPtr, logOp, "#LOGICALOP$");
+    // ASSIGN
+    std::regex assign("=");
+    tokenizedContent = std::regex_replace(tokenizedContent, assign, "#ASSIGN$");
 
-	// ARITHMETIC OPERATORS
-	std::regex ariOp("\\+|\\-|\\*|\\/|\\%");
-	*contentPtr = std::regex_replace(*contentPtr, ariOp, "#ARITHMETICOP$");
+    // BEFORE RETURNING tokenizedContent REMOVE ANYTHING THAT IS not a regex
+    /*
+    std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
+    
+    std::regex rem("(?!\$)((.)+)(?=\#)");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
+        
+    std::regex rem("(?!\$)[a-zA-Z0-9](?=\#)");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
+    
+    std::regex rem("(?!\$).+(?=\#)");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem, "");
 
-	// ASSIGN
-	std::regex assign("=");
-	*contentPtr = std::regex_replace(*contentPtr, assign, "#ASSIGN$");
-
-	// RETURN
-	std::regex ret("return");
-	*contentPtr = std::regex_replace(*contentPtr, ret, "#RETURN$");
-
-	// BEFORE RETURNING CONTENT REMOVE ANYTHING THAT IS not a regex
-	
-	/*
-	std::regex rem("([^$]*)\\$(.*)[^#]*\\#");
-	*contentPtr = std::regex_replace(*contentPtr, rem, "");
-	
-	std::regex rem("(?!\$)((.)+)(?=\#)");
-	*contentPtr = std::regex_replace(*contentPtr, rem, "");
-		
-	std::regex rem("(?!\$)[a-zA-Z0-9](?=\#)");
-	*contentPtr = std::regex_replace(*contentPtr, rem, "");
-	
-	std::regex rem("(?!\$).+(?=\#)");
-	*contentPtr = std::regex_replace(*contentPtr, rem, "");
-
-	std::regex rem2("$\W+#");
-	*contentPtr = std::regex_replace(*contentPtr, rem2, "");	
-	
-	std::regex remSemiColon("[;]*");
-	*contentPtr = std::regex_replace(*contentPtr, remSemiColon, "");
-	std::regex remBrackets("[{]|[}]");
-	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
-	std::regex rem("[']|[']");%
-	*contentPtr = std::regex_replace(*contentPtr, remBrackets, "");
-	*/
-	kGramGeneration(content,2);
+    std::regex rem2("$\W+#");
+    tokenizedContent = std::regex_replace(tokenizedContent, rem2, "");	
+    
+    std::regex remSemiColon("[;]*");
+    tokenizedContent = std::regex_replace(tokenizedContent, remSemiColon, "");
+    std::regex remBrackets("[{]|[}]");
+    tokenizedContent = std::regex_replace(tokenizedContent, remBrackets, "");
+    std::regex rem("[']|[']");%
+    tokenizedContent = std::regex_replace(tokenizedContent, remBrackets, "");
+    */
 }
-void FilePlagiarism::kGramGeneration(std::string &content, const int k) {
-	// kGram index
-	int kGramIndex = 0;
-	// number of tokens found
-	int t = 0;
-	// index of first token of this sequence
-	int nextSequence = 0;
-	for (int j = content.find("#"); j < content.length(); j = content.find("#",j+1)) {
-		if (t == k) {
-			kGramIndex++;
-			j = nextSequence;
-			t = 0;
-		}
-		else {
-			arrayPlagiarism[kGramIndex] = arrayPlagiarism[kGramIndex] + content.substr(j + 1, (content.find('$', j) - j) - 1);
-			if (t) {
-				nextSequence = j;
-			}
-			t++;
-		}
-	}
-	arrayUse = kGramIndex;
-	for (int i = 0; arrayPlagiarism[i] != ""; i++) {
-		// Counter for number of times a kGram occurs
-		int n = 1;
-		for (int j = 0; arrayPlagiarism[j] != ""; j++) {
-			if (j != i) {
-				if (!arrayPlagiarism[i].compare(arrayPlagiarism[j])) {
-					arrayPlagiarism[j] = arrayPlagiarism[arrayUse];
-					arrayPlagiarism[arrayUse] = "";
-					arrayUse--;
-					n++;
-				}
-			}
-		}
-		arrayPlagiarism[i] += " : " + std::to_string(n);
-	}
+void FilePlagiarism::kGramGeneration(const int k) {
+    // kGram index
+    int kGramIndex = 0;
+    // number of tokens found
+    int t = 0;
+    // index of first token of this sequence
+    int nextSequence = 0;
+    // Finding all the tokens and adding them to the k-Gram array
+    for (int j = tokenizedContent.find("#");
+            j < tokenizedContent.length();
+            j = tokenizedContent.find("#", j+1)) {
+        if (t == k) {
+            kGramIndex++;
+            j = nextSequence;
+            t = 0;
+        } else {
+            arrayPlagiarism[kGramIndex] = arrayPlagiarism[kGramIndex]
+                        + tokenizedContent.substr(
+                            j + 1,
+                            (tokenizedContent.find('$', j) - j) - 1);
+            if (t) {
+                nextSequence = j;
+            }
+            t++;
+        }
+    }
+    arrayUse = kGramIndex;
+    /***************************************************
+    * Gets a k-Gram,
+    * if it occurs more than once in the array
+    * deletes the other occurences
+    * and keeps a track of the number of times
+    * it occured. Then changes the array from
+    * K-GRAMAK-GRAMBK-GRAMC to
+    * K-GRAMAK-GRAMBK-GRAMC : [INT number of occurences]
+    ***************************************************/
+    for (int i = 0; arrayPlagiarism[i] != ""; i++) {
+        // Counter for number of times a kGram occurs
+        int n = 1;
+        for (int j = 0; arrayPlagiarism[j] != ""; j++) {
+            if (j != i) {
+                if (!arrayPlagiarism[i].compare(arrayPlagiarism[j])) {
+                    arrayPlagiarism[j] = arrayPlagiarism[arrayUse];
+                    arrayPlagiarism[arrayUse] = "";
+                    arrayUse--;
+                    j--;
+                    n++;
+                }
+            }
+        }
+        arrayPlagiarism[i] += " : " + std::to_string(n);
+    }
 }
 std::string FilePlagiarism::getFileName() const {
     return fileName;
-}
-double FilePlagiarism::percentageSameLines(FilePlagiarism* otherFile) {
-    int linesCounter = 0;
-    int sameLinesCounter = 0;
-    std::ifstream read(otherFile->pathToFile);
-    std::string line;
-    while (std::getline(read, line)) {
-        linesCounter++;
-        if (content.find(line) != std::string::npos)
-            sameLinesCounter++;
-    }
-    read.close();
-    return sameLinesCounter / static_cast<double>(linesCounter);
-}
-double FilePlagiarism::getPlagiarism() const {
-    return plagiarism;
 }

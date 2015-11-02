@@ -2,8 +2,8 @@
 *                       Copyright 2015
 * <Daniel Mateus Pires x00132886, Luke Michael Dickens x00132785>
 *****************************************************************/
-#include "./DirectoryPlagiarism.h"
 #include <iostream>
+#include "./DirectoryPlagiarism.h"
 int main() {
     // The files are in ./files/[fileName]
     DirectoryPlagiarism dir("./files");
